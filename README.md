@@ -100,7 +100,7 @@ V2A provides dedicated APK builds for each Android architecture, drastically red
 ### Steps
 ```bash
 # 1. Clone repository
-git clone https://github.com/v2a-project/v2a.git
+git clone https://github.com/margacis2/v2a.git
 cd v2a
 
 # 2. Get dependencies
