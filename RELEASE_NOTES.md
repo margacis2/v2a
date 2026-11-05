@@ -45,3 +45,4 @@ V2A is a high-performance, private, and fully offline Android application engine
 * Release builds with Dart AOT compilation.
 * Android R8 code shrinking and resource optimization via ProGuard.
 * Split per-ABI architecture builds separating `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
+
