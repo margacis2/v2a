@@ -1,0 +1,37 @@
+Categories:
+  - Multimedia
+License: GPL-3.0-only
+AuthorName: margacis2
+SourceCode: https://github.com/margacis2/v2a
+IssueTracker: https://github.com/margacis2/v2a/issues
+Changelog: https://github.com/margacis2/v2a/releases
+
+AutoName: V2A
+
+Summary: Video to Audio Converter & Trimmer
+
+Description: |-
+    V2A is a high-performance Android application built with Flutter and FFmpeg.
+    It provides video-to-audio extraction, audio format conversion, video preview,
+    audio playback, background batch processing, and precision audio trimming.
+
+RepoType: git
+Repo: https://github.com/margacis2/v2a.git
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    subdir: android
+    output: app/build/outputs/apk/release/app-release.apk
+    srclibs:
+      - flutter@3.12.2
+    prebuild:
+      - flutter pub get
+    build:
+      - flutter build apk --release
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1

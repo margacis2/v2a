@@ -1,0 +1,13 @@
+V2A is a high-performance Android application built with Flutter and FFmpeg. It provides video-to-audio extraction, audio format conversion, video preview, audio playback, background batch processing, and precision audio trimming through an intuitive interface.
+
+Key Features:
+- Video Preview: Hardware-accelerated streaming video playback using Android Media3 ExoPlayer with audio track inspection and metadata breakdown.
+- Fastest Compatible Mode: Direct FFmpeg packet stream copy (-c:a copy) when the source audio codec matches the selected output container, reaching speeds of 20x to 80x real-time with 0% CPU transcoding overhead and bit-perfect fidelity.
+- Audio Re-encoding: Configurable bitrates from 16 kbps to 320 kbps (CBR/VBR), sample rates from 8 kHz to 48 kHz, and channel layouts (Original, Mono, Stereo).
+- Audio Processing: Volume adjustment (-12 dB to +12 dB), EBU R128 loudness normalization, silence trimming, and smooth fade-in/out effects.
+- Lossless Export: Bit-perfect FLAC encoding and uncompressed 16-bit linear PCM WAV.
+- 8 Built-in Presets: Fastest Compatibility, Balanced (MP3 192k), Best Quality (MP3 320k), Smallest Practical File (Opus 48k), Voice or Speech (Opus 64k), Music (AAC 256k), Lossless Master (FLAC), and Maximum Compression (Opus 32k).
+- Standalone Audio Trimmer: Real-time waveform visualization, sub-second precision, quick adjustment chips (+/-1s, +/-5s, +/-1m), and non-destructive export.
+- Duplicate-Safe File Management: Never overwrites existing files; automatically creates collision-free unique names (Audio.mp3 -> Audio (1).mp3).
+- Built-in Audio Player: Complete offline audio player with background playback and lock-screen notification controls.
+- 100% Offline & Private: All media processing occurs locally on your device without network calls or cloud dependencies.
