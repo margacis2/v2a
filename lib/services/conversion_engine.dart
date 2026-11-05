@@ -73,6 +73,12 @@ class ConversionEngine {
   /// Alias for cancelling a conversion session by job ID
   Future<void> cancelSession(String jobId) => cancelJob(jobId);
 
+  @visibleForTesting
+  List<String> buildCommandArgumentsForTesting({
+    required ConversionJob job,
+    required String tempOutputPath,
+  }) => _buildCommandArguments(job: job, tempOutputPath: tempOutputPath);
+
   /// Executes conversion for the given job.
   /// Follows Section 8 duplicate-safe rules, temporary atomic staging, and full progress callbacks.
   Future<ConversionResult> executeConversion({
