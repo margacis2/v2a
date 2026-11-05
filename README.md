@@ -32,9 +32,6 @@ Here are screenshots of the **V2A** application running on Android:
 |:---:|:---:|:---:|
 | <img src="screenshots/preset_selection.png" width="240" alt="Preset Selection" /> | <img src="screenshots/batch_conversion.png" width="240" alt="Conversion Queue" /> | <img src="screenshots/conversion_history.png" width="240" alt="Background Conversion" /> |
 
-> [!TIP]
-> Add or update your screenshots in the [`screenshots/`](screenshots/) directory in the repository as the application evolves.
-
 ---
 
 ## ✨ Key Features
