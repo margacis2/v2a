@@ -8,6 +8,9 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../models/conversion_config.dart';
 import '../models/conversion_job.dart';
+import '../models/media_file.dart';
+import 'desktop_media_engine.dart';
+import 'media_metadata_service.dart';
 import 'output_manager.dart';
 
 typedef ProgressCallback = void Function({
@@ -62,6 +65,9 @@ class ConversionEngine {
 
   /// Cancels an active conversion job immediately
   Future<void> cancelJob(String jobId) async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return DesktopMediaEngine().cancelJob(jobId);
+    }
     final sessionId = _activeSessionIds[jobId];
     if (sessionId != null) {
       debugPrint('[ConversionEngine] Cancelling FFmpeg session $sessionId for job $jobId');
@@ -73,11 +79,22 @@ class ConversionEngine {
   /// Alias for cancelling a conversion session by job ID
   Future<void> cancelSession(String jobId) => cancelJob(jobId);
 
+  /// Builds argument list for conversion
+  List<String> buildCommandArguments({
+    required ConversionJob job,
+    required String tempOutputPath,
+  }) => _buildCommandArguments(job: job, tempOutputPath: tempOutputPath);
+
   @visibleForTesting
   List<String> buildCommandArgumentsForTesting({
     required ConversionJob job,
     required String tempOutputPath,
-  }) => _buildCommandArguments(job: job, tempOutputPath: tempOutputPath);
+  }) => buildCommandArguments(job: job, tempOutputPath: tempOutputPath);
+
+  /// Analyzes media file on mobile
+  Future<MediaFile> analyzeMediaFileMobile(String filePath) {
+    return MediaMetadataService().analyzeMediaFile(filePath);
+  }
 
   /// Executes conversion for the given job.
   /// Follows Section 8 duplicate-safe rules, temporary atomic staging, and full progress callbacks.
@@ -85,6 +102,9 @@ class ConversionEngine {
     required ConversionJob job,
     required ProgressCallback onProgress,
   }) async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return DesktopMediaEngine().convertAudio(job: job, onProgress: onProgress);
+    }
     final outputManager = OutputManager();
 
     // 1. Storage validation
@@ -395,6 +415,9 @@ class ConversionEngine {
 
   /// Extracts genuine downsampled audio waveform amplitude peaks (0.0 to 1.0)
   Future<List<double>> extractWaveformPeaks(String audioPath, {int targetSampleCount = 120}) async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return DesktopMediaEngine().extractWaveformPeaks(audioPath, targetSampleCount: targetSampleCount);
+    }
     final tempDir = await getTemporaryDirectory();
     final tempPcm = File('${tempDir.path}/waveform_${DateTime.now().millisecondsSinceEpoch}.raw');
 
@@ -467,6 +490,19 @@ class ConversionEngine {
     bool normalizeLoudness = false,
     void Function(double progress)? onProgress,
   }) async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return DesktopMediaEngine().trimAudioFile(
+        sourcePath: sourcePath,
+        outputDirectory: outputDirectory,
+        baseName: baseName,
+        format: format,
+        startMs: startMs,
+        endMs: endMs,
+        volumeGainDb: volumeGainDb,
+        normalizeLoudness: normalizeLoudness,
+        onProgress: onProgress,
+      );
+    }
     final outputManager = OutputManager();
 
     // 1. Storage check

@@ -1,20 +1,21 @@
-# V2A — Video-to-Audio Converter for Android
+# V2A — Video-to-Audio Converter & Studio (Android & Desktop)
 
 <p align="center">
   <img src="android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="96" height="96" alt="V2A Logo" />
 </p>
 
 <p align="center">
-  <b>Extract, convert, trim and manage audio from video files — all from your Android device.</b><br>
-  V2A is a high-performance Android application built with Flutter and FFmpeg. It provides video-to-audio extraction, audio format conversion, video preview, audio playback, background batch processing, and precision audio trimming through an intuitive, modern interface.
+  <b>Extract, convert, trim and manage audio from video files — on Android, Windows 10/11, and macOS.</b><br>
+  V2A is a high-performance application built with Flutter and native FFmpeg. It provides video-to-audio extraction, audio format conversion, video preview, audio playback, background batch processing, and precision audio trimming through an intuitive, modern interface across both mobile and desktop platforms.
 </p>
 
 <p align="center">
   <a href="https://github.com/margacis2/v2a/releases/latest"><img src="https://img.shields.io/github/v/release/margacis2/v2a?style=flat-square&color=blue" alt="Latest Release" /></a>
-  <img src="https://img.shields.io/badge/Platform-Android%207.0%2B-brightgreen?style=flat-square" alt="Platform: Android 7.0+" />
-  <img src="https://img.shields.io/badge/Architecture-ARM64%20|%20ARMv7%20|%20x86__64-orange?style=flat-square" alt="Supported Architectures" />
+  <img src="https://img.shields.io/badge/Platform-Android%20|%20Windows%20|%20macOS-brightgreen?style=flat-square" alt="Platforms" />
+  <img src="https://img.shields.io/badge/Desktop%20App%20ID-com.v2a.converter.desktop-blueviolet?style=flat-square" alt="Desktop ID" />
+  <img src="https://img.shields.io/badge/Android%20App%20ID-com.v2a.converter.v2a-success?style=flat-square" alt="Android ID" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT%20%2F%20GPLv3-blue?style=flat-square" alt="License: MIT / GPLv3" /></a>
-  <img src="https://img.shields.io/badge/Engine-FFmpeg%20v4.6.8-purple?style=flat-square" alt="FFmpeg Engine" />
+  <img src="https://img.shields.io/badge/Engine-FFmpeg%20Native%20Streaming-purple?style=flat-square" alt="FFmpeg Engine" />
   <img src="https://img.shields.io/badge/Framework-Flutter%203-blueviolet?style=flat-square" alt="Flutter 3" />
 </p>
 
@@ -119,6 +120,47 @@ Additional safety mechanisms:
 - **Lock Screen Controls**: System media notification with play/pause, seek forward/back, and track metadata.
 - **Queue & Playlist**: Playlist and queue management with shuffle and repeat modes.
 - **Variable Playback Speed**: Flexible audio playback speed regulation (0.5× – 2.0×).
+
+---
+
+## 💻 V2A Desktop (Windows 10/11 & macOS)
+
+V2A v1.2.0 introduces a dedicated, high-performance native desktop application for **Windows** and **macOS**.  
+Built with Flutter Desktop and compiled into native 64-bit machine code — **no Electron, no webview wrappers, and no localhost servers**.
+
+### Desktop Highlights:
+- **Native OS Software**: 1280x720 default window, minimum size 1000x650 enforced via `window_manager`.
+- **8-Item Sidebar Navigation**: Home, Audio Converter, Queue, Trimmer, Studio Player, History, Settings, About.
+- **Hardware-Accelerated Streaming FFmpeg**: Utilizes native Dart Process APIs with `-progress pipe:1 -nostats` streaming progress, speed ratios, and ETA remaining.
+- **Complete & Lite Editions**:
+  - **Complete Edition**: Bundled with static `ffmpeg` and `ffprobe` binaries for 100% offline self-containment.
+  - **Lite Edition**: Lightweight (~20 MB compressed) utilizing system PATH FFmpeg.
+- **Interactive Audio Trimmer**: High-density PCM waveform visualization with sub-second precision and ±1s, ±5s, ±1m nudge buttons.
+- **Integrated Studio Player**: Real-time audio playback with speed controls (0.5x – 2.0x) and recent exports playlist.
+- **SQLite Database Persistence**: Full conversion journal with search and instant "Reveal in File Explorer / Finder".
+- **Global Keyboard Shortcuts**:
+  - `Ctrl + O` / `Cmd + O`: Open Media File
+  - `Ctrl + Enter` / `Cmd + Enter`: Start Conversion
+  - `Ctrl + ,` / `Cmd + ,`: Open Settings
+  - `Ctrl + Shift + C`: Clear Completed Queue
+
+### Desktop Downloads & Packages:
+| OS / Distribution | Format | Installer File | Purpose |
+|---|---|---|---|
+| **Windows 10/11 (64-bit)** | Inno Setup EXE | `V2A-Setup-1.2.0-x64.exe` | Standard Windows installer with Start Menu & Desktop shortcuts |
+| **Windows 10/11 (64-bit)** | Portable ZIP | `V2A-1.2.0-Windows-x64-Portable.zip` | Standalone portable zero-install package |
+| **Windows Enterprise** | WiX MSI | `V2A-1.2.0-x64.msi` | Enterprise Group Policy (GPO) and Intune deployment |
+| **macOS (Universal 2)** | Disk Image (DMG) | `V2A-1.2.0-macOS.dmg` | Drag-and-drop installer for Apple Silicon (M1/M2/M3/M4) & Intel |
+| **macOS (Universal 2)** | Package (PKG) | `V2A-1.2.0-macOS.pkg` | Component package installer for `/Applications` |
+
+### Detailed Documentation:
+- [Desktop Architecture & Platform Isolation](docs/DESKTOP_ARCHITECTURE.md)
+- [Windows Build & Packaging Guide](docs/WINDOWS_BUILD.md)
+- [macOS Build & Packaging Guide](docs/MACOS_BUILD.md)
+- [FFmpeg Desktop Setup Guide](docs/FFmpeg_SETUP.md)
+- [Desktop Verification & Testing](docs/DESKTOP_TESTING.md)
+- [Package Size & Memory Analysis](docs/DESKTOP_PACKAGE_SIZE_REPORT.md)
+- [Installation Guide](docs/INSTALLATION.md)
 
 ---
 

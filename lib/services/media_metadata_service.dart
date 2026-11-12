@@ -4,6 +4,7 @@ import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../models/media_file.dart';
+import 'desktop_media_engine.dart';
 
 class MediaMetadataService {
   static final MediaMetadataService _instance = MediaMetadataService._internal();
@@ -12,6 +13,10 @@ class MediaMetadataService {
 
   /// Inspects a video or audio file and extracts complete metadata without decoding the file
   Future<MediaFile> analyzeMediaFile(String filePath) async {
+    // On Desktop platforms, delegate to native Process-based DesktopMediaEngine
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return DesktopMediaEngine().inspectMedia(filePath);
+    }
     final file = File(filePath);
     if (!await file.exists()) {
       return MediaFile(

@@ -1,0 +1,105 @@
+name: V2A Desktop Build & Release (Windows & macOS)
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
+      - desktop-v1.2.0
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  # ==========================================
+  # Windows Desktop Build & Packaging
+  # ==========================================
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes
+
+      - name: Verify Environment
+        run: flutter doctor -v
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Static Analysis
+        run: flutter analyze
+
+      - name: Run Tests
+        run: flutter test -j 1
+
+      - name: Build Windows Desktop Release
+        run: flutter build windows --release
+
+      - name: Build Inno Setup Installer
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" packaging\windows\v2a_setup.iss
+
+      - name: Build Portable ZIP
+        run: |
+          powershell -ExecutionPolicy Bypass -File packaging\windows\build_portable.ps1 -Mode lite
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2a-windows-1.2.0
+          path: |
+            dist/V2A-Setup-1.2.0-x64.exe
+            dist/V2A-1.2.0-Windows-x64-Portable.zip
+
+  # ==========================================
+  # macOS Desktop Build & Packaging
+  # ==========================================
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Verify Environment
+        run: flutter doctor -v
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build macOS Desktop Release
+        run: flutter build macos --release
+
+      - name: Package DMG
+        run: |
+          chmod +x packaging/macos/build_dmg.sh
+          ./packaging/macos/build_dmg.sh
+
+      - name: Package PKG
+        run: |
+          chmod +x packaging/macos/build_pkg.sh
+          ./packaging/macos/build_pkg.sh
+
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2a-macos-1.2.0
+          path: |
+            dist/V2A-1.2.0-macOS.dmg
+            dist/V2A-1.2.0-macOS.pkg

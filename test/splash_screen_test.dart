@@ -39,7 +39,7 @@ void main() {
 
     // Complete duration to transition
     await tester.pump(const Duration(milliseconds: 1200));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     appState.stopPerformanceMonitoring();
   });

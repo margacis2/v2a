@@ -1,5 +1,6 @@
+import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/conversion_job.dart';
 
 class DatabaseService {
@@ -12,6 +13,10 @@ class DatabaseService {
   Future<Database?> get database async {
     if (_db != null) return _db;
     try {
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        sqfliteFfiInit();
+        databaseFactory = databaseFactoryFfi;
+      }
       _db = await _initDatabase();
       return _db;
     } catch (e) {

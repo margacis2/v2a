@@ -51,6 +51,9 @@ dependencies:
   path: ^1.9.1
   audio_session: ^0.2.4
   uuid: ^4.6.0
+  sqflite_common_ffi: ^2.4.7
+  window_manager: ^0.5.2
+  just_audio_windows: ^0.2.3
 
 dev_dependencies:
   flutter_test:
