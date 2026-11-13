@@ -121,7 +121,8 @@ jobs:
       - name: Install Linux Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev alien file
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libjson-glib-dev alien rpm file
+          sudo apt-get install -y libfuse2t64 || sudo apt-get install -y libfuse2 || true
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -134,34 +135,26 @@ jobs:
 
       - name: Build Linux Desktop Release
         run: |
-          flutter build linux --release -v 2>&1 | tee linux_build.log || true
+          flutter build linux --release
 
       - name: Check Linux Binary
         run: |
-          if [ ! -f "build/linux/x64/release/bundle/v2a" ]; then
-            echo "::warning::Linux binary not produced. Build log summary:"
-            tail -n 100 linux_build.log || true
-          fi
+          ls -la build/linux/x64/release/bundle/
+          test -f build/linux/x64/release/bundle/v2a
 
       - name: Package Linux .deb & .tar.gz
         run: |
-          if [ -f "build/linux/x64/release/bundle/v2a" ]; then
-            chmod +x packaging/linux/*.sh
-            ./packaging/linux/build_deb.sh
-            ./packaging/linux/build_tar.sh
-          fi
+          chmod +x packaging/linux/*.sh
+          ./packaging/linux/build_deb.sh
+          ./packaging/linux/build_tar.sh
 
       - name: Package Linux .rpm
         run: |
-          if [ -f "build/linux/x64/release/bundle/v2a" ]; then
-            ./packaging/linux/build_rpm.sh || true
-          fi
+          ./packaging/linux/build_rpm.sh || true
 
       - name: Package Linux .AppImage
         run: |
-          if [ -f "build/linux/x64/release/bundle/v2a" ]; then
-            ./packaging/linux/build_appimage.sh || true
-          fi
+          ./packaging/linux/build_appimage.sh || true
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
@@ -173,7 +166,6 @@ jobs:
             dist/V2A-1.2.1-Linux-x64.rpm
             dist/V2A-1.2.1-x86_64.AppImage
             dist/V2A-1.2.1-Linux-x64-Portable.tar.gz
-            linux_build.log
 
   # ==========================================
   # Android APK & App Bundle Build
@@ -229,7 +221,7 @@ jobs:
   publish-release:
     runs-on: ubuntu-latest
     needs: [build-windows, build-macos, build-linux, build-android]
-    if: always() && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
+    if: always() && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/desktop-v1.2.1' || github.ref == 'refs/heads/main')
     permissions:
       contents: write
     steps:
@@ -267,6 +259,7 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v1.2.1
           files: release_assets/**/*
           name: "V2A v1.2.1 — Multi-Platform Release (Windows, macOS, Linux, Android)"
           body_path: RELEASE_NOTES.md

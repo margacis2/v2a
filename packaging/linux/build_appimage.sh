@@ -42,9 +42,11 @@ fi
 # Download appimagetool if not present
 if ! command -v appimagetool &> /dev/null; then
     echo "Downloading appimagetool..."
-    curl -L -s https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o build/appimagetool
+    curl -L -s https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -o build/appimagetool
     chmod +x build/appimagetool
-    ARCH=x86_64 ./build/appimagetool --appimage-extract-and-run "$APP_DIR" "$DIST_DIR/V2A-${VERSION}-x86_64.AppImage"
+    rm -rf build/squashfs-root
+    (cd build && ./appimagetool --appimage-extract > /dev/null)
+    ARCH=x86_64 ./build/squashfs-root/AppRun "$APP_DIR" "$DIST_DIR/V2A-${VERSION}-x86_64.AppImage"
 else
     ARCH=x86_64 appimagetool "$APP_DIR" "$DIST_DIR/V2A-${VERSION}-x86_64.AppImage"
 fi
