@@ -1,19 +1,23 @@
 class AudioTrackInfo {
-  final int index;
+  final int index; // Container stream index
+  final int audioStreamIndex; // Relative 0-based audio stream index (0:a:N)
   final String codec;
   final String? language;
   final String? title;
   final int channels;
+  final String? channelLayout;
   final int sampleRate;
   final int bitrateKbps;
   final bool isDefault;
 
   AudioTrackInfo({
     required this.index,
+    this.audioStreamIndex = 0,
     required this.codec,
     this.language,
     this.title,
     this.channels = 2,
+    this.channelLayout,
     this.sampleRate = 44100,
     this.bitrateKbps = 0,
     this.isDefault = false,
@@ -21,23 +25,26 @@ class AudioTrackInfo {
 
   String get displayName {
     final parts = <String>[];
-    if (title != null && title!.isNotEmpty) {
-      parts.add(title!);
-    } else {
-      parts.add('Track #$index');
-    }
+    parts.add('Track ${audioStreamIndex + 1}');
     if (language != null && language!.isNotEmpty && language != 'und') {
-      parts.add('(${language!.toUpperCase()})');
+      parts.add('— ${language!.toUpperCase()}');
     }
-    parts.add('• ${codec.toUpperCase()}');
-    if (channels > 0) {
-      parts.add(channels == 1 ? 'Mono' : channels == 2 ? 'Stereo' : '${channels}ch');
+    if (title != null && title!.isNotEmpty) {
+      parts.add('— "$title"');
     }
+    parts.add('— ${codec.toUpperCase()}');
+    final layout = channelLayout != null && channelLayout!.isNotEmpty
+        ? channelLayout!
+        : (channels == 1 ? 'Mono' : channels == 2 ? 'Stereo' : '${channels}ch');
+    parts.add('— $layout');
     if (sampleRate > 0) {
-      parts.add('${(sampleRate / 1000).toStringAsFixed(1)}kHz');
+      parts.add('— ${(sampleRate / 1000).toStringAsFixed(1)} kHz');
     }
     if (bitrateKbps > 0) {
-      parts.add('${bitrateKbps}kbps');
+      parts.add('— $bitrateKbps kbps');
+    }
+    if (isDefault) {
+      parts.add('(Default)');
     }
     return parts.join(' ');
   }
@@ -50,10 +57,12 @@ class AudioTrackInfo {
   Map<String, dynamic> toMap() {
     return {
       'index': index,
+      'audioStreamIndex': audioStreamIndex,
       'codec': codec,
       'language': language,
       'title': title,
       'channels': channels,
+      'channelLayout': channelLayout,
       'sampleRate': sampleRate,
       'bitrateKbps': bitrateKbps,
       'isDefault': isDefault ? 1 : 0,
@@ -63,10 +72,12 @@ class AudioTrackInfo {
   factory AudioTrackInfo.fromMap(Map<String, dynamic> map) {
     return AudioTrackInfo(
       index: map['index'] as int? ?? 0,
+      audioStreamIndex: map['audioStreamIndex'] as int? ?? (map['index'] as int? ?? 0),
       codec: map['codec'] as String? ?? 'unknown',
       language: map['language'] as String?,
       title: map['title'] as String?,
       channels: map['channels'] as int? ?? 2,
+      channelLayout: map['channelLayout'] as String?,
       sampleRate: map['sampleRate'] as int? ?? 44100,
       bitrateKbps: map['bitrateKbps'] as int? ?? 0,
       isDefault: (map['isDefault'] as int? ?? 0) == 1,

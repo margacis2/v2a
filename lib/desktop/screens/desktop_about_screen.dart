@@ -71,7 +71,7 @@ class _DesktopAboutScreenState extends State<DesktopAboutScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Version 1.2.0 Desktop • Native 64-bit Software',
+                    'Version 1.2.1 Desktop • Native 64-bit Software',
                     style: TextStyle(fontSize: 13, color: Colors.grey, fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 10),

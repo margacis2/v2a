@@ -1,4 +1,4 @@
-name: V2A Multi-Platform Release (Android, Windows, macOS)
+name: V2A Multi-Platform Release (Android, Windows, macOS, Linux)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'v*'
     branches:
       - main
-      - desktop-v1.2.0
+      - desktop-v1.2.1
   pull_request:
     branches:
       - main
@@ -61,11 +61,11 @@ jobs:
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: v2a-windows-1.2.0
+          name: v2a-windows-1.2.1
           path: |
-            dist/V2A-Setup-1.2.0-x64.exe
-            dist/V2A-1.2.0-x64.msi
-            dist/V2A-1.2.0-Windows-x64-Portable.zip
+            dist/V2A-Setup-1.2.1-x64.exe
+            dist/V2A-1.2.1-x64.msi
+            dist/V2A-1.2.1-Windows-x64-Portable.zip
 
   # ==========================================
   # macOS Desktop Build & Packaging
@@ -104,10 +104,60 @@ jobs:
       - name: Upload macOS Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: v2a-macos-1.2.0
+          name: v2a-macos-1.2.1
           path: |
-            dist/V2A-1.2.0-macOS.dmg
-            dist/V2A-1.2.0-macOS.pkg
+            dist/V2A-1.2.1-macOS.dmg
+            dist/V2A-1.2.1-macOS.pkg
+
+  # ==========================================
+  # Linux Desktop Build & Packaging
+  # ==========================================
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Linux Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev alien file
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Linux Desktop Release
+        run: flutter build linux --release
+
+      - name: Package Linux .deb & .tar.gz
+        run: |
+          chmod +x packaging/linux/*.sh
+          ./packaging/linux/build_deb.sh
+          ./packaging/linux/build_tar.sh
+
+      - name: Package Linux .rpm
+        run: |
+          ./packaging/linux/build_rpm.sh || true
+
+      - name: Package Linux .AppImage
+        run: |
+          ./packaging/linux/build_appimage.sh || true
+
+      - name: Upload Linux Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2a-linux-1.2.1
+          path: |
+            dist/V2A-1.2.1-Linux-x64.deb
+            dist/V2A-1.2.1-Linux-x64.rpm
+            dist/V2A-1.2.1-x86_64.AppImage
+            dist/V2A-1.2.1-Linux-x64-Portable.tar.gz
 
   # ==========================================
   # Android APK & App Bundle Build
@@ -154,7 +204,7 @@ jobs:
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: v2a-android-1.2.0
+          name: v2a-android-1.2.1
           path: dist/android/*
 
   # ==========================================
@@ -162,7 +212,7 @@ jobs:
   # ==========================================
   publish-release:
     runs-on: ubuntu-latest
-    needs: [build-windows, build-macos, build-android]
+    needs: [build-windows, build-macos, build-linux, build-android]
     if: always() && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
     permissions:
       contents: write
@@ -174,28 +224,35 @@ jobs:
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          name: v2a-windows-1.2.0
+          name: v2a-windows-1.2.1
           path: release_assets/
 
       - name: Download macOS Artifacts
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          name: v2a-macos-1.2.0
+          name: v2a-macos-1.2.1
+          path: release_assets/
+
+      - name: Download Linux Artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: v2a-linux-1.2.1
           path: release_assets/
 
       - name: Download Android Artifacts
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          name: v2a-android-1.2.0
+          name: v2a-android-1.2.1
           path: release_assets/
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: release_assets/**/*
-          name: "V2A v1.2.0 — Multi-Platform Release (Android, Windows, macOS)"
+          name: "V2A v1.2.1 — Multi-Platform Release (Windows, macOS, Linux, Android)"
           body_path: RELEASE_NOTES.md
           draft: false
           prerelease: false

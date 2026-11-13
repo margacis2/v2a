@@ -1,67 +1,65 @@
-# V2A — Release Notes
+# V2A Version 1.2.1 Release Notes
+
+## Multi-Platform Native Audio Conversion Studio (Windows, macOS, Linux, Android)
+
+V2A v1.2.1 introduces major desktop engine architectural enhancements, multi-stream track extraction (for MKV, MP4, and multi-track containers), batch conversion, custom output directory enforcement, comprehensive metadata/artwork support, and first-class native Linux packaging.
 
 ---
 
-## What's New in v1.2.0
+### Key Highlights & Changes in v1.2.1
 
-### 1. Native Desktop Support (Windows 10/11 & macOS)
-* **Native Desktop Software**: True 64-bit native Flutter Desktop compilation — 0% Electron, 0% WebView wrappers, 0% localhost servers.
-* **Unified Brand Identity**: Windows `.ico` and macOS `Assets.xcassets` application icons now match the official V2A Android launcher icon.
-* **Desktop Workspaces**: 8-item dedicated navigation sidebar (Home, Converter, Batch Queue, Trimmer, Studio Player, Conversion History, Settings, About).
-* **High-Speed Streaming FFmpeg Engine**: Native process spawning with progress pipe streaming, real-time FPS/speed ratios, and cancellation handling.
-* **Desktop Packaging Formats**:
-  * Windows Inno Setup EXE (`V2A-Setup-1.2.0-x64.exe`)
-  * Windows Portable ZIP (`V2A-1.2.0-Windows-x64-Portable.zip`)
-  * Windows Enterprise WiX MSI (`V2A-1.2.0-x64.msi`)
-  * macOS Universal 2 DMG (`V2A-1.2.0-macOS.dmg`)
-  * macOS Component PKG (`V2A-1.2.0-macOS.pkg`)
+#### 1. Conversion Engine & Progress Accuracy
+- **Fixed 99% Progress Jump**: Resolved an issue where FFmpeg progress microseconds (`out_time_us`) were parsed as milliseconds, causing conversion progress to jump to 99% prematurely. Progress now accurately reflects exact duration progress and smoothly transitions to 100% only upon complete verification of the output file.
+- **Strict Destination Enforcement**: Converted files strictly respect `DestinationMode`:
+  - **Default configured directory** (persisted in preferences and accessible in Settings).
+  - **Beside source file** (`p.dirname(sourcePath)`).
+  - **Custom destination folder** selected via native system folder picker.
+- **Never-Overwrite Duplicate Safety**: Atomic temporary staging files (`.tmp`) ensure corrupt or partial output never clobbers existing files. Unique auto-increment naming (`_1`, `_2`) guarantees lossless file safety.
 
-### 2. Android v1.2.0 Synchronization
-* **Version Parity**: Upgraded Android app version code to 2 and version name to 1.2.0 in sync with the multi-platform release.
-* **Settings & About Updates**: Reflected Version 1.2.0 across settings and documentation.
-* **F-Droid Metadata**: Updated F-Droid build configuration to build `v1.2.0`.
-* **Zero Breaking Changes**: Maintained 100% Android protection — Android builds, manifest, and features remain completely intact.
+#### 2. Multiple Audio Stream Selection & Extraction (MKV, MP4, WebM)
+- **Container Stream Enumeration**: FFprobe inspects all container streams and surfaces every audio track with stream index, codec, language code, channel layout (Mono, Stereo, 5.1, 7.1), sample rate, and default flags.
+- **Dynamic Stream Mapping**: Employs dynamic `-map 0:a:N` parameters for exact track extraction without video re-encoding overhead.
+- **Batch Track Extraction**: Option to convert all audio tracks into separate labeled files simultaneously (`filename_Track1_eng.mp3`, `filename_Track2_tam.mp3`).
+
+#### 3. Advanced Audio Configuration & Processing
+- **Extended Channel Routing**: Supports Mono, Stereo, 2.1 Surround (3ch), 4.0 Quadraphonic (4ch), 5.1 Surround (6ch), and 7.1 Surround (8ch).
+- **Decibel Volume Adjustment**: Precision slider and numeric input from -24 dB to +24 dB with one-click reset to 0 dB.
+- **Broadcast Loudness Normalization**: Integrated EBU R128 loudness filter (`loudnorm=I=-16:TP=-1.5:LRA=11`).
+- **Smooth Fades & Silence Trimming**: Configurable fade-in and fade-out durations and intelligent dead air removal (`silenceremove`).
+
+#### 4. Metadata, ID3v2 Tags & Album Artwork
+- Comprehensive tag editing: Title, Artist, Album, Album Artist, Year, Genre, Track Number, Disc Number, Composer, Copyright, Comment, Lyrics, and Language.
+- Option to strip all existing metadata (`-map_metadata -1`) or preserve source tags.
+- Front cover album artwork embedding (`attached_pic`).
+
+#### 5. Native Linux Support & Packaging
+- Added full native Linux desktop build support.
+- Generated standard Linux desktop packaging:
+  - Debian / Ubuntu `.deb` package (`dpkg-deb`).
+  - Red Hat / Fedora `.rpm` package (`alien`).
+  - Universal `.AppImage` bundle (`appimagetool`).
+  - Portable `.tar.gz` distribution bundle.
+
+#### 6. Absolute Android Protection
+- Zero changes to the `android/` directory (`git diff android/` is completely empty).
+- All Android builds, architectures, and features remain 100% intact and backward-compatible.
 
 ---
 
-## What's New in v1.0.0
+### Release Binaries & Installers
 
-### 1. Crash-Proof Conversion Presets
-* **Root Cause Fixed**: Resolved the `DropdownButton` assertion failure (`items == null || ... length == 1`) triggered when selecting presets with zero/custom sample rates (`Fastest Compatibility`, `Voice or Speech`, `Lossless Master`, and `Maximum Compression`).
-* **Complete Preset Suite**: Added full support for all 8 presets with stable string identifiers:
-  1. **Fastest Compatibility**: Direct stream-copy pass-through without transcoding when source codecs match. Instantaneous, 0% quality loss, minimal battery drain.
-  2. **Balanced**: Standard audio balance (MP3, 192 kbps, 44.1 kHz stereo).
-  3. **Best Quality**: Maximum MP3 fidelity (320 kbps CBR, 48 kHz stereo).
-  4. **Smallest Practical File**: Compact high-efficiency audio (Opus, 48 kbps, 24 kHz mono).
-  5. **Voice or Speech**: Speech clarity optimization (Opus, 64 kbps, 24 kHz mono).
-  6. **Music**: Optimized high-fidelity music (AAC, 256 kbps, 48 kHz stereo).
-  7. **Lossless Master**: Bit-perfect studio archival in FLAC container at source sample rate.
-  8. **Maximum Compression**: Ultra-compact file size for sharing (Opus, 32 kbps, 16 kHz mono).
-* **Lossless Conversion Warning**: Informative banner alerts users when converting lossy source media into FLAC or WAV containers.
-
-### 2. High-Performance Startup & Native Splash Screen
-* **Native Android 12+ Splash**: Branded launch screen with custom dark navy background (`#0F172A`) and centered app icon.
-* **Lightweight Flutter Splash Screen**: Smooth logo fade, scale animation, and title reveal transitioning smoothly into Home.
-* **Cold Start Latency Reduction**: Removed synchronous blocking calls (`AudioPlayerService`, `JobQueueService`, `FeedbackService`) from `main()`. Audio services and performance monitoring now initialize asynchronously on-demand.
-
-### 3. Responsive UI & Animation Overhaul
-* Tested across 320px, 360px, 393px, 412px, and landscape orientations without `RenderFlex` overflows.
-* Animated cubic page transitions respecting user reduced-motion preferences (`MediaQuery.disableAnimations`).
-* Real-time device storage calculation via native Android `StatFs` (`totalBytes`, `availableBytes`, `usedBytes`, and V2A output directory disk usage).
-
-### 4. Standalone Audio Trimmer
-* Accessible directly from the Home screen.
-* High-speed PCM downsampled waveform visualization using FFmpeg.
-* Sub-second precision with quick-jump nudge chips (`±1s`, `±5s`, `±1m`) and editable timestamp controllers.
-* Non-destructive atomic export with collision-free naming.
-
-### 5. Multi-Select File & Queue Management
-* History selection mode with Select All / Deselect All.
-* Explicit confirmation dialogs protecting against accidental bulk deletions.
-* Clean termination of active FFmpeg sessions before removing queued jobs.
-
-### 6. Dramatic APK Size Reduction
-* Release builds with Dart AOT compilation.
-* Android R8 code shrinking and resource optimization via ProGuard.
-* Split per-ABI architecture builds separating `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
-
+- **Windows 10/11 (x64)**:
+  - `V2A-Setup-1.2.1-x64.exe` (Inno Setup Installer)
+  - `V2A-1.2.1-x64.msi` (WiX Toolset Windows Installer)
+  - `V2A-1.2.1-Windows-x64-Portable.zip` (Portable ZIP Bundle)
+- **macOS**:
+  - `V2A-1.2.1-macOS.dmg` (Apple Disk Image)
+  - `V2A-1.2.1-macOS.pkg` (Apple Installer Package)
+- **Linux (x64)**:
+  - `V2A-1.2.1-Linux-x64.deb` (Debian / Ubuntu)
+  - `V2A-1.2.1-Linux-x64.rpm` (Fedora / RHEL)
+  - `V2A-1.2.1-x86_64.AppImage` (Universal AppImage)
+  - `V2A-1.2.1-Linux-x64-Portable.tar.gz` (Portable Tarball)
+- **Android**:
+  - `V2A-arm64-v8a-release.apk`, `V2A-armeabi-v7a-release.apk`, `V2A-x86_64-release.apk`, `V2A-universal-release.apk`
+  - `V2A-release.aab` (Google Play App Bundle)

@@ -264,7 +264,11 @@ enum ConversionPreset {
 enum ChannelMode {
   keepOriginal('Keep Original', null),
   mono('Mono (1 ch)', 1),
-  stereo('Stereo (2 ch)', 2);
+  stereo('Stereo (2 ch)', 2),
+  surround2_1('2.1 Stereo + Sub', 3),
+  quad('4.0 Quadraphonic', 4),
+  surround5_1('5.1 Surround', 6),
+  surround7_1('7.1 Surround', 8);
 
   final String label;
   final int? channelCount;

@@ -5,7 +5,7 @@ param (
 
 $ErrorActionPreference = "Stop"
 
-$version = "1.2.0"
+$version = "1.2.1"
 $sourceDir = "build\windows\x64\runner\Release"
 $distDir = "dist"
 

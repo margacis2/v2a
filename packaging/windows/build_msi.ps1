@@ -34,6 +34,6 @@ Write-Host "Compiling WiX sources using candle.exe..."
 & candle.exe -arch x64 -dSourceDir=$SourceDir packaging\windows\v2a_installer.wxs build\ProductComponents.wxs -out build\
 
 Write-Host "Linking MSI installer using light.exe..."
-& light.exe -ext WixUIExtension -sval -b $SourceDir build\v2a_installer.wixobj build\ProductComponents.wixobj -out "$OutputDir\V2A-1.2.0-x64.msi"
+& light.exe -ext WixUIExtension -sval -b $SourceDir build\v2a_installer.wixobj build\ProductComponents.wixobj -out "$OutputDir\V2A-1.2.1-x64.msi"
 
-Write-Host "Successfully built MSI: $OutputDir\V2A-1.2.0-x64.msi"
+Write-Host "Successfully built MSI: $OutputDir\V2A-1.2.1-x64.msi"

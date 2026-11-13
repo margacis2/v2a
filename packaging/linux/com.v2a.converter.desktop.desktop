@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=V2A
+Comment=Video to Audio Converter & Studio
+Exec=v2a %U
+Icon=v2a
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;AudioVideoEditing;
+StartupNotify=true
+MimeType=audio/*;video/*;

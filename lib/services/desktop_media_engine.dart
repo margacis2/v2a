@@ -151,6 +151,19 @@ class DesktopMediaEngine implements MediaEngine {
     return 'FFmpeg (Unknown version)';
   }
 
+  static int _parseOutTimeToMs(String outTime) {
+    try {
+      final parts = outTime.trim().split(':');
+      if (parts.length == 3) {
+        final hours = int.tryParse(parts[0]) ?? 0;
+        final minutes = int.tryParse(parts[1]) ?? 0;
+        final seconds = double.tryParse(parts[2]) ?? 0.0;
+        return ((hours * 3600 + minutes * 60 + seconds) * 1000).round();
+      }
+    } catch (_) {}
+    return 0;
+  }
+
   @override
   Future<String> getVersion() async {
     if (_engineMode == DesktopEngineMode.unavailable) {
@@ -232,8 +245,11 @@ class DesktopMediaEngine implements MediaEngine {
           videoHeight = int.tryParse(streamMap['height']?.toString() ?? '');
         } else if (codecType == 'audio') {
           final tags = streamMap['tags'] as Map<String, dynamic>? ?? {};
+          final disposition = streamMap['disposition'] as Map<String, dynamic>? ?? {};
           final language = tags['language']?.toString();
           final title = tags['title']?.toString();
+          final channelLayout = streamMap['channel_layout']?.toString();
+          final isDefault = disposition['default'] == 1 || disposition['default'] == '1';
 
           final channels = int.tryParse(streamMap['channels']?.toString() ?? '') ?? 2;
           final sampleRate = int.tryParse(streamMap['sample_rate']?.toString() ?? '') ?? 44100;
@@ -241,16 +257,20 @@ class DesktopMediaEngine implements MediaEngine {
           final bitrateKbps = rawBitrate > 0 ? (rawBitrate / 1000).round() : 0;
           final codec = streamMap['codec_name']?.toString() ?? 'unknown';
           final index = int.tryParse(streamMap['index']?.toString() ?? '') ?? audioTracks.length;
+          final audioStreamIndex = audioTracks.length; // 0-based audio stream index within audio streams
 
           audioTracks.add(
             AudioTrackInfo(
               index: index,
+              audioStreamIndex: audioStreamIndex,
               codec: codec,
               channels: channels,
               sampleRate: sampleRate,
               bitrateKbps: bitrateKbps,
               language: language,
               title: title,
+              channelLayout: channelLayout,
+              isDefault: isDefault,
             ),
           );
         }
@@ -297,30 +317,50 @@ class DesktopMediaEngine implements MediaEngine {
       }
     }
 
+    // Determine effective target directory
+    String effectiveDirectory = job.outputDirectory;
+    if (job.destinationMode == DestinationMode.besideOriginalFile) {
+      effectiveDirectory = p.dirname(job.sourcePath);
+    }
+
+    // Ensure directory exists
+    try {
+      final dir = Directory(effectiveDirectory);
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+    } catch (e) {
+      return ConversionResult(
+        success: false,
+        outputPath: '',
+        errorMessage: 'Destination folder cannot be created or accessed: $effectiveDirectory ($e)',
+      );
+    }
+
     final outputManager = OutputManager();
 
     // 1. Storage validation
     final hasStorage = await outputManager.checkStorageSpace(
-      directoryPath: job.outputDirectory,
+      directoryPath: effectiveDirectory,
       estimatedBytes: 100 * 1024 * 1024,
     );
     if (!hasStorage) {
       return ConversionResult(
         success: false,
         outputPath: '',
-        errorMessage: 'Destination folder is not writable or storage is full: ${job.outputDirectory}',
+        errorMessage: 'Destination folder is not writable or storage is full: $effectiveDirectory',
       );
     }
 
     // 2. Reserve atomic temporary processing file
     final tempFile = await outputManager.createTemporaryProcessingFile(
-      directoryPath: job.outputDirectory,
+      directoryPath: effectiveDirectory,
       extension: job.format.extension,
     );
 
     // 3. Resolve target filename uniquely (Never Overwrite guarantee)
     final resolvedTargetName = await outputManager.resolveUniqueFileName(
-      directoryPath: job.outputDirectory,
+      directoryPath: effectiveDirectory,
       baseName: p.basenameWithoutExtension(job.requestedFileName),
       extension: job.format.extension,
     );
@@ -377,9 +417,20 @@ class DesktopMediaEngine implements MediaEngine {
               latestTimeMs = us ~/ 1000;
             }
           } else if (key == 'out_time_ms') {
-            final ms = int.tryParse(value);
-            if (ms != null && ms > 0) {
-              latestTimeMs = ms;
+            final raw = int.tryParse(value);
+            if (raw != null && raw > 0) {
+              // In some FFmpeg versions out_time_ms is actually printed in microseconds
+              if (raw > totalDurationMs * 10 && totalDurationMs > 1000) {
+                latestTimeMs = raw ~/ 1000;
+              } else {
+                latestTimeMs = raw;
+              }
+            }
+          } else if (key == 'out_time') {
+            // e.g. "00:01:23.456000"
+            final parsedMs = _parseOutTimeToMs(value);
+            if (parsedMs > 0) {
+              latestTimeMs = parsedMs;
             }
           } else if (key == 'speed') {
             final speedVal = double.tryParse(value.replaceAll('x', '').trim());
@@ -388,8 +439,9 @@ class DesktopMediaEngine implements MediaEngine {
             }
           }
 
-          if (key == 'progress' || key == 'out_time_us' || key == 'out_time_ms') {
-            double progress = (latestTimeMs / totalDurationMs).clamp(0.0, 0.99);
+          if (key == 'progress' || key == 'out_time_us' || key == 'out_time_ms' || key == 'out_time') {
+            // Never reach 1.0 here - 1.0 is emitted ONLY when process successfully exits and output is verified
+            double progress = (latestTimeMs / totalDurationMs).clamp(0.0, 0.95);
             final elapsed = stopwatch.elapsed.inSeconds;
             int remaining = 0;
             if (progress > 0.05 && latestSpeed > 0) {
@@ -426,7 +478,7 @@ class DesktopMediaEngine implements MediaEngine {
             try {
               final finalizedFile = await outputManager.finalizeOutputFile(
                 tempFile: tempFile,
-                directoryPath: job.outputDirectory,
+                directoryPath: effectiveDirectory,
                 targetFileName: resolvedTargetName,
                 extension: job.format.extension,
               );

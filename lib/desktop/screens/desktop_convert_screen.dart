@@ -86,7 +86,7 @@ class _DesktopConvertScreenState extends State<DesktopConvertScreen> {
 
   Future<void> _pickFile() async {
     final result = await FilePicker.pickFiles(
-      type: FileType.custom,
+            type: FileType.custom,
       allowedExtensions: [
         'mp4', 'mkv', 'mov', 'avi', 'flv', 'wmv', 'webm', '3gp', 'm4v', 'ts', 'mts',
         'mp3', 'aac', 'm4a', 'wav', 'flac', 'ogg', 'opus',
@@ -727,9 +727,13 @@ class _DesktopConvertScreenState extends State<DesktopConvertScreen> {
                       initialValue: _channelMode,
                       decoration: _inputDecoration(isDark),
                       items: const [
-                        DropdownMenuItem(value: ChannelMode.keepOriginal, child: Text('Original')),
-                        DropdownMenuItem(value: ChannelMode.stereo, child: Text('Stereo (2 ch)')),
+                        DropdownMenuItem(value: ChannelMode.keepOriginal, child: Text('Original Channel Layout')),
                         DropdownMenuItem(value: ChannelMode.mono, child: Text('Mono (1 ch)')),
+                        DropdownMenuItem(value: ChannelMode.stereo, child: Text('Stereo (2 ch)')),
+                        DropdownMenuItem(value: ChannelMode.surround2_1, child: Text('2.1 Surround (3 ch)')),
+                        DropdownMenuItem(value: ChannelMode.quad, child: Text('4.0 Quadraphonic (4 ch)')),
+                        DropdownMenuItem(value: ChannelMode.surround5_1, child: Text('5.1 Surround (6 ch)')),
+                        DropdownMenuItem(value: ChannelMode.surround7_1, child: Text('7.1 Surround (8 ch)')),
                       ],
                       onChanged: (val) {
                         if (val != null) setState(() => _channelMode = val);

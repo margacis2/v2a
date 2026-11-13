@@ -1,6 +1,6 @@
-; Inno Setup Script for V2A — Video to Audio Studio v1.2.0
+; Inno Setup Script for V2A — Video to Audio Studio v1.2.1
 #define MyAppName "V2A"
-#define MyAppVersion "1.2.0"
+#define MyAppVersion "1.2.1"
 #define MyAppPublisher "margacis2"
 #define MyAppURL "https://github.com/margacis2/v2a"
 #define MyAppExeName "v2a.exe"
@@ -24,7 +24,7 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=..\..\LICENSE
 OutputDir=..\..\dist
-OutputBaseFilename=V2A-Setup-1.2.0-x64
+OutputBaseFilename=V2A-Setup-1.2.1-x64
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern

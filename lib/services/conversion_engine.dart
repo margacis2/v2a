@@ -272,11 +272,29 @@ class ConversionEngine {
     // Input file (streaming reading)
     args.addAll(['-i', job.sourcePath]);
 
+    // Optional artwork input
+    final hasArtwork = job.metadata.artworkPath != null &&
+        File(job.metadata.artworkPath!).existsSync();
+    if (hasArtwork) {
+      args.addAll(['-i', job.metadata.artworkPath!]);
+    }
+
     // Map specific audio track and drop video
-    if (job.selectedAudioTrackIndex >= 0) {
+    // Use audioStreamIndex if present (0-based audio stream, e.g. -map 0:a:0)
+    // or relative stream index / explicit stream index
+    if (job.audioStreamIndex >= 0) {
+      args.addAll(['-vn', '-map', '0:a:${job.audioStreamIndex}']);
+    } else if (job.selectedAudioTrackIndex >= 0) {
       args.addAll(['-vn', '-map', '0:${job.selectedAudioTrackIndex}']);
     } else {
       args.addAll(['-vn', '-map', '0:a:0?']);
+    }
+
+    // If artwork is present and output format supports attached picture (e.g. mp3, m4a, flac)
+    if (hasArtwork) {
+      if (job.format == AudioFormat.mp3 || job.format == AudioFormat.flac) {
+        args.addAll(['-map', '1:0', '-c:v', 'copy', '-disposition:v:0', 'attached_pic']);
+      }
     }
 
     // Check if Mode A (Fastest Compatible Stream Copy) is applicable
@@ -287,7 +305,9 @@ class ConversionEngine {
         job.fadeInSec == 0.0 &&
         job.fadeOutSec == 0.0 &&
         !job.trimSilence &&
-        job.channelMode == ChannelMode.keepOriginal;
+        job.channelMode == ChannelMode.keepOriginal &&
+        !job.metadata.stripMetadata &&
+        !hasArtwork;
 
     if (canStreamCopy) {
       // Direct packet stream copy: maximum speed, zero CPU re-encoding overhead
@@ -360,7 +380,7 @@ class ConversionEngine {
       audioFilters.add('volume=${job.volumeGainDb.toStringAsFixed(1)}dB');
     }
 
-    // Loudness normalization
+    // Loudness normalization (EBU R128 standard broadcast target)
     if (job.normalizeLoudness) {
       audioFilters.add('loudnorm=I=-16:TP=-1.5:LRA=11');
     }
@@ -377,9 +397,23 @@ class ConversionEngine {
       audioFilters.add('afade=t=out:st=${fadeStart.toStringAsFixed(1)}:d=${job.fadeOutSec.toStringAsFixed(1)}');
     }
 
-    // Silence removal
-    if (job.trimSilence) {
-      audioFilters.add('silenceremove=stop_periods=-1:stop_duration=1:stop_threshold=-50dB');
+    // Silence trimming / removal
+    if (job.trimSilence && job.silenceTrimMode != SilenceTrimMode.none) {
+      final thresh = job.silenceThresholdDb.toStringAsFixed(1);
+      final dur = job.silenceMinDurationSec.toStringAsFixed(2);
+      switch (job.silenceTrimMode) {
+        case SilenceTrimMode.leadingOnly:
+          audioFilters.add('silenceremove=start_periods=1:start_duration=$dur:start_threshold=${thresh}dB');
+          break;
+        case SilenceTrimMode.trailingOnly:
+          audioFilters.add('silenceremove=stop_periods=1:stop_duration=$dur:stop_threshold=${thresh}dB');
+          break;
+        case SilenceTrimMode.leadingAndTrailing:
+          audioFilters.add('silenceremove=start_periods=1:start_duration=$dur:start_threshold=${thresh}dB:stop_periods=1:stop_duration=$dur:stop_threshold=${thresh}dB');
+          break;
+        case SilenceTrimMode.none:
+          break;
+      }
     }
 
     if (audioFilters.isNotEmpty) {
@@ -394,6 +428,15 @@ class ConversionEngine {
     final List<String> args = [];
     final meta = job.metadata;
 
+    if (meta.stripMetadata) {
+      args.addAll(['-map_metadata', '-1']);
+      return args;
+    }
+
+    if (meta.preserveMetadata) {
+      args.addAll(['-map_metadata', '0']);
+    }
+
     if (meta.title != null && meta.title!.trim().isNotEmpty) {
       args.addAll(['-metadata', 'title=${meta.title!.trim()}']);
     }
@@ -403,11 +446,43 @@ class ConversionEngine {
     if (meta.album != null && meta.album!.trim().isNotEmpty) {
       args.addAll(['-metadata', 'album=${meta.album!.trim()}']);
     }
+    if (meta.albumArtist != null && meta.albumArtist!.trim().isNotEmpty) {
+      args.addAll(['-metadata', 'album_artist=${meta.albumArtist!.trim()}']);
+    }
     if (meta.year != null && meta.year!.trim().isNotEmpty) {
       args.addAll(['-metadata', 'date=${meta.year!.trim()}']);
     }
     if (meta.genre != null && meta.genre!.trim().isNotEmpty) {
       args.addAll(['-metadata', 'genre=${meta.genre!.trim()}']);
+    }
+    if (meta.trackNumber != null && meta.trackNumber!.trim().isNotEmpty) {
+      args.addAll(['-metadata', 'track=${meta.trackNumber!.trim()}']);
+    }
+    if (meta.discNumber != null && meta.discNumber!.trim().isNotEmpty) {
+      args.addAll(['-metadata', 'disc=${meta.discNumber!.trim()}']);
+    }
+    if (meta.composer != null && meta.composer!.trim().isNotEmpty) {
+      args.addAll(['-metadata', 'composer=${meta.composer!.trim()}']);
+    }
+    if (meta.copyright != null && meta.copyright!.trim().isNotEmpty) {
+      args.addAll(['-metadata', 'copyright=${meta.copyright!.trim()}']);
+    }
+    if (meta.comment != null && meta.comment!.trim().isNotEmpty) {
+      args.addAll(['-metadata', 'comment=${meta.comment!.trim()}']);
+    }
+    if (meta.lyrics != null && meta.lyrics!.trim().isNotEmpty) {
+      args.addAll(['-metadata', 'lyrics=${meta.lyrics!.trim()}']);
+    }
+    if (meta.language != null && meta.language!.trim().isNotEmpty) {
+      args.addAll(['-metadata:s:a:0', 'language=${meta.language!.trim()}']);
+    }
+
+    if (meta.customTags.isNotEmpty) {
+      for (final entry in meta.customTags.entries) {
+        if (entry.key.trim().isNotEmpty && entry.value.trim().isNotEmpty) {
+          args.addAll(['-metadata', '${entry.key.trim()}=${entry.value.trim()}']);
+        }
+      }
     }
 
     return args;
