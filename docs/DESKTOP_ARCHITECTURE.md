@@ -152,3 +152,4 @@ The Desktop UI adopts native desktop ergonomics with an 8-item sidebar:
 ### Lite vs Complete Modes
 - **V2A Lite**: Small download (~15-25 MB). Uses system-installed FFmpeg or prompts user to select `ffmpeg.exe` / `ffmpeg`.
 - **V2A Complete**: Standalone download with bundled FFmpeg/FFprobe binaries for instant out-of-the-box offline conversion.
+

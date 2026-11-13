@@ -58,3 +58,4 @@ Remove-Item -Path $tempStaging -Recurse -Force
 Write-Host "Portable package created: $targetZip" -ForegroundColor Green
 $fileItem = Get-Item $targetZip
 Write-Host "Package size: $([math]::Round($fileItem.Length / 1MB, 2)) MB" -ForegroundColor Cyan
+

@@ -21,3 +21,4 @@ pkgbuild \
   "${PKG_PATH}"
 
 echo "PKG successfully created at: ${PKG_PATH}"
+

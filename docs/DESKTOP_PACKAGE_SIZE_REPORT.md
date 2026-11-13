@@ -59,3 +59,4 @@ Universal 2 binary supports both Apple Silicon (M1/M2/M3/M4) and Intel Macs nati
 2. **Font Subsetting**: Material Symbols are tree-shaken and subsetted at build time, stripping unused glyphs.
 3. **Piped Progress Streaming**: FFmpeg progress is consumed directly via stdout pipes (`-progress pipe:1 -nostats`), avoiding disk I/O for progress logs.
 4. **LZMA2 Ultra Compression**: Inno Setup installer uses `lzma2/ultra64` with solid compression, reducing the download size to just ~20 MB (Lite) and ~86 MB (Complete).
+

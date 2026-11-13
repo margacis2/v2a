@@ -103,3 +103,4 @@ jobs:
           path: |
             dist/V2A-1.2.0-macOS.dmg
             dist/V2A-1.2.0-macOS.pkg
+

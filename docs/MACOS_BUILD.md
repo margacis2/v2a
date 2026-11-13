@@ -97,3 +97,4 @@ xcrun notarytool submit "dist/V2A-1.2.0-macOS.dmg" \
 # 3. Staple Notarization Ticket
 xcrun stapler staple "dist/V2A-1.2.0-macOS.dmg"
 ```
+

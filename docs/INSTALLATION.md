@@ -44,3 +44,4 @@ Upon first launch:
 2. If using the Complete Edition, the bundled FFmpeg is automatically activated.
 3. If using the Lite Edition, V2A will detect your system PATH FFmpeg. (See [FFmpeg Setup Guide](FFmpeg_SETUP.md) if needed).
 4. You are ready to drag and drop video files and export high-fidelity audio!
+

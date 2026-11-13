@@ -90,3 +90,4 @@ You can configure and test your FFmpeg binary directly inside V2A:
 | **FLAC** | `flac` | Lossless | Source / up to 96 kHz | Yes (when source is FLAC) |
 | **WAV** | `pcm_s16le` | 1411 kbps Uncompressed | 8 kHz – 48 kHz | Yes (when source is PCM) |
 | **OGG** | `libvorbis` | 32 – 320 kbps | 8 kHz – 48 kHz | Yes (when source is Vorbis) |
+

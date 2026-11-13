@@ -31,3 +31,4 @@ else
 fi
 
 echo "DMG successfully created at: ${DMG_PATH}"
+
