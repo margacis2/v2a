@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/margacis2/v2a/releases/latest"><img src="https://img.shields.io/github/v/release/margacis2/v2a?style=flat-square&color=blue" alt="Latest Release" /></a>
+  <a href="https://github.com/margacis2/v2a/releases/tag/v1.2.1"><img src="https://img.shields.io/badge/Release-v1.2.1-blue?style=flat-square" alt="Latest Release v1.2.1" /></a>
   <img src="https://img.shields.io/badge/Platform-Windows%20|%20macOS%20|%20Linux%20|%20Android-brightgreen?style=flat-square" alt="Platforms" />
   <img src="https://img.shields.io/badge/Desktop%20App%20ID-com.v2a.converter.desktop-blueviolet?style=flat-square" alt="Desktop ID" />
   <img src="https://img.shields.io/badge/Android%20App%20ID-com.v2a.converter.v2a-success?style=flat-square" alt="Android ID" />
@@ -18,6 +18,33 @@
   <img src="https://img.shields.io/badge/Engine-FFmpeg%20Native%20Streaming-purple?style=flat-square" alt="FFmpeg Engine" />
   <img src="https://img.shields.io/badge/Framework-Flutter%203-blueviolet?style=flat-square" alt="Flutter 3" />
 </p>
+
+---
+
+## 📦 Official Release Downloads (Version 1.2.1)
+
+All production binaries are uploaded and directly downloadable from the official [V2A v1.2.1 GitHub Release](https://github.com/margacis2/v2a/releases/tag/v1.2.1):
+
+### 🪟 Windows 10 / 11 (64-bit)
+| Package Format | File Name | Size | Direct Download Link |
+|---|---|---|---|
+| **Inno Setup EXE Installer** | `V2A-Setup-1.2.1-x64.exe` | 41.7 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-Setup-1.2.1-x64.exe) |
+| **Standalone Portable ZIP** | `V2A-1.2.1-Windows-x64-Portable.zip` | 58.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-Windows-x64-Portable.zip) |
+
+### 🍏 macOS (Apple Silicon & Intel Universal 2)
+| Package Format | File Name | Size | Direct Download Link |
+|---|---|---|---|
+| **Apple Disk Image (DMG)** | `V2A-1.2.1-macOS.dmg` | 63.2 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-macOS.dmg) |
+| **Component Package (PKG)** | `V2A-1.2.1-macOS.pkg` | 56.7 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-macOS.pkg) |
+
+### 🤖 Android (APKs & Google Play Bundle)
+| Target Device / Architecture | Package Name | Size | Direct Download Link |
+|---|---|---|---|
+| **ARM64 Devices (Recommended)** | `V2A-arm64-v8a-release.apk` | 63.9 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-arm64-v8a-release.apk) |
+| **Older 32-bit ARM Devices** | `V2A-armeabi-v7a-release.apk` | 98.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-armeabi-v7a-release.apk) |
+| **x86_64 Emulators / ChromeOS** | `V2A-x86_64-release.apk` | 71.5 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-x86_64-release.apk) |
+| **Universal All-in-One APK** | `V2A-universal-release.apk` | 229.4 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-universal-release.apk) |
+| **Google Play App Bundle** | `V2A-release.aab` | 142.8 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-release.aab) |
 
 ---
 
@@ -38,7 +65,7 @@ Here are screenshots of the **V2A** application running on Android:
 ## ✨ Key Features
 
 ### 1. Multi-Stream Audio Track Extraction (MKV, MP4, WebM)
-- **Container Stream Enumeration**: Uses FFprobe to inspect all audio tracks in a container, showing stream index, language, codec, channel layout (Mono, Stereo, 5.1, 7.1), sample rate, and default flags.
+- **Container Stream Enumeration**: Uses FFprobe to inspect all audio tracks in a container, displaying stream index, language, codec, channel layout (Mono, Stereo, 5.1, 7.1), sample rate, and default flags.
 - **Selective & Batch Extraction**: Extract individual tracks or convert **all audio tracks simultaneously** into separate labeled files (`movie_Track1_eng.mp3`, `movie_Track2_tam.mp3`).
 - **Dynamic FFmpeg Stream Mapping**: Automatically passes `-map 0:a:N` parameters for clean extraction without video re-encoding overhead.
 
@@ -144,42 +171,6 @@ V2A Desktop is a native 64-bit application built with Flutter Desktop and compil
   - `Ctrl + Enter` / `Cmd + Enter`: Start Conversion
   - `Ctrl + ,` / `Cmd + ,`: Open Settings
   - `Ctrl + Shift + C`: Clear Completed Queue
-
----
-
-## 📦 Downloads & Release Packages
-
-All release packages are available on the [Releases page](https://github.com/margacis2/v2a/releases):
-
-### Windows Desktop (10 / 11 64-bit)
-| Format | Installer File | Purpose |
-|---|---|---|
-| **Inno Setup EXE** | `V2A-Setup-1.2.1-x64.exe` | Standard Windows installer with Start Menu & Desktop shortcuts |
-| **WiX MSI** | `V2A-1.2.1-x64.msi` | Enterprise Group Policy (GPO) and Intune deployment |
-| **Portable ZIP** | `V2A-1.2.1-Windows-x64-Portable.zip` | Standalone portable zero-install package |
-
-### macOS Desktop (Apple Silicon & Intel)
-| Format | Installer File | Purpose |
-|---|---|---|
-| **Apple Disk Image (DMG)** | `V2A-1.2.1-macOS.dmg` | Drag-and-drop installer for macOS |
-| **Apple Component Package (PKG)** | `V2A-1.2.1-macOS.pkg` | Component package installer for `/Applications` |
-
-### Linux Desktop (x64)
-| Format | Installer File | Purpose |
-|---|---|---|
-| **Debian / Ubuntu Package** | `V2A-1.2.1-Linux-x64.deb` | Standard package for Ubuntu, Debian, Linux Mint, Pop!_OS |
-| **Fedora / RHEL Package** | `V2A-1.2.1-Linux-x64.rpm` | Package for Fedora, Red Hat Enterprise Linux, openSUSE |
-| **Universal AppImage** | `V2A-1.2.1-x86_64.AppImage` | Portable self-contained executable for all Linux distributions |
-| **Portable Tarball** | `V2A-1.2.1-Linux-x64-Portable.tar.gz` | Portable extract-and-run archive |
-
-### Android (APK & App Bundle)
-| Architecture | Target Devices | Release APK |
-|---|---|---|
-| **ARM64 (`arm64-v8a`)** | **Modern Android phones and tablets (Recommended)** | `V2A-arm64-v8a-release.apk` |
-| **ARMv7 (`armeabi-v7a`)** | Compatible 32-bit Android devices | `V2A-armeabi-v7a-release.apk` |
-| **x86_64 (`x86_64`)** | Android Studio emulators and compatible Chromebooks | `V2A-x86_64-release.apk` |
-| **Universal** | All architectures bundled in a single APK | `V2A-universal-release.apk` |
-| **Android App Bundle** | **Google Play distribution ONLY** | `V2A-release.aab` |
 
 ---
 
