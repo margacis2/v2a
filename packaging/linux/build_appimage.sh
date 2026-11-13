@@ -50,3 +50,4 @@ else
 fi
 
 echo "AppImage created at: $DIST_DIR/V2A-${VERSION}-x86_64.AppImage"
+

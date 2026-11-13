@@ -5,13 +5,13 @@
 </p>
 
 <p align="center">
-  <b>Extract, convert, trim and manage audio from video files — on Android, Windows 10/11, and macOS.</b><br>
-  V2A is a high-performance application built with Flutter and native FFmpeg. It provides video-to-audio extraction, audio format conversion, video preview, audio playback, background batch processing, and precision audio trimming through an intuitive, modern interface across both mobile and desktop platforms.
+  <b>Extract, convert, trim and manage audio from video files — on Windows 10/11, macOS, Linux, and Android.</b><br>
+  V2A is a high-performance native media suite built with Flutter and streaming FFmpeg. It provides professional video-to-audio extraction, batch audio format transcoding, multi-stream track routing (MKV/MP4), video preview, audio playback, background queue processing, and precision waveform trimming across mobile and desktop platforms.
 </p>
 
 <p align="center">
   <a href="https://github.com/margacis2/v2a/releases/latest"><img src="https://img.shields.io/github/v/release/margacis2/v2a?style=flat-square&color=blue" alt="Latest Release" /></a>
-  <img src="https://img.shields.io/badge/Platform-Android%20|%20Windows%20|%20macOS-brightgreen?style=flat-square" alt="Platforms" />
+  <img src="https://img.shields.io/badge/Platform-Windows%20|%20macOS%20|%20Linux%20|%20Android-brightgreen?style=flat-square" alt="Platforms" />
   <img src="https://img.shields.io/badge/Desktop%20App%20ID-com.v2a.converter.desktop-blueviolet?style=flat-square" alt="Desktop ID" />
   <img src="https://img.shields.io/badge/Android%20App%20ID-com.v2a.converter.v2a-success?style=flat-square" alt="Android ID" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT%20%2F%20GPLv3-blue?style=flat-square" alt="License: MIT / GPLv3" /></a>
@@ -37,13 +37,10 @@ Here are screenshots of the **V2A** application running on Android:
 
 ## ✨ Key Features
 
-### 1. Video Preview
-- **ExoPlayer Playback**: Hardware-accelerated streaming video playback using Android Media3 ExoPlayer without buffering entire files into memory.
-- **Precision Controls**: Play, pause, forward and backward 10-second seek buttons, and full seek bar.
-- **Audio & Volume Control**: Volume slider, mute/unmute toggle.
-- **Variable Playback Speed**: 0.5×, 0.75×, 1.0×, 1.25×, 1.5×, and 2.0×.
-- **Audio Track Inspection**: Detailed breakdown of audio tracks with codec, channels, sample rate, language, and title for multi-language videos.
-- **Video Metadata Inspection**: Real-time display of duration, resolution, video codec, file size, and container type.
+### 1. Multi-Stream Audio Track Extraction (MKV, MP4, WebM)
+- **Container Stream Enumeration**: Uses FFprobe to inspect all audio tracks in a container, showing stream index, language, codec, channel layout (Mono, Stereo, 5.1, 7.1), sample rate, and default flags.
+- **Selective & Batch Extraction**: Extract individual tracks or convert **all audio tracks simultaneously** into separate labeled files (`movie_Track1_eng.mp3`, `movie_Track2_tam.mp3`).
+- **Dynamic FFmpeg Stream Mapping**: Automatically passes `-map 0:a:N` parameters for clean extraction without video re-encoding overhead.
 
 ### 2. Audio Extraction and Conversion
 
@@ -53,16 +50,21 @@ Here are screenshots of the **V2A** application running on Android:
 - Preserves the original bit-perfect encoded audio stream with zero quality loss.
 
 #### Audio Re-encoding
-- **Bitrates**: Configurable audio bitrates from 16 kbps to 320 kbps.
+- **Bitrates**: Configurable audio bitrates from 16 kbps to 320 kbps, plus custom bitrate input.
 - **Bitrate Modes**: Constant Bitrate (CBR) and Variable Bitrate (VBR) where supported by the selected encoder.
-- **Sample Rates**: 8.0 kHz, 12.0 kHz, 16.0 kHz, 22.05 kHz, 24.0 kHz, 32.0 kHz, 44.1 kHz, and 48.0 kHz.
-- **Channel Layouts**: Keep Original, Mono, and Stereo.
+- **Sample Rates**: 8.0 kHz, 11.025 kHz, 16.0 kHz, 22.05 kHz, 24.0 kHz, 32.0 kHz, 44.1 kHz, 48.0 kHz, 88.2 kHz, 96.0 kHz, and 192.0 kHz.
+- **Channel Layouts**: Keep Original, Mono (1 ch), Stereo (2 ch), 2.1 Surround (3 ch), 4.0 Quadraphonic (4 ch), 5.1 Surround (6 ch), and 7.1 Surround (8 ch).
 
-#### Audio Processing
-- **Volume Boost/Attenuation**: Adjustable volume gain from -12 dB to +12 dB.
-- **Loudness Normalization**: Integrated EBU R128 (`loudnorm=I=-16:TP=-1.5:LRA=11`) loudness normalization.
-- **Silence Trimming**: Automatic leading and trailing silence detection and removal.
+#### Audio Processing & Enhancement
+- **Decibel Volume Adjustment**: Precision slider and numeric input from -24 dB to +24 dB with a one-click reset to 0 dB (`volume=XdB`).
+- **Loudness Normalization**: Integrated EBU R128 (`loudnorm=I=-16:TP=-1.5:LRA=11`) broadcast loudness normalization.
+- **Silence Trimming**: Automatic lead and trailing silence detection and removal (`silenceremove`).
 - **Fade Effects**: Configurable smooth fade-in and fade-out transitions.
+
+#### Metadata & Album Artwork
+- Full ID3v2, Vorbis, and container tag editing: Title, Artist, Album, Album Artist, Year, Genre, Track Number, Disc Number, Composer, Copyright, Comment, Lyrics, and Language.
+- Option to strip all metadata (`-map_metadata -1`) or preserve original tags.
+- Front cover album artwork embedding (`attached_pic`).
 
 #### Lossless Export
 - Uncompressed 16-bit linear PCM WAV.
@@ -106,10 +108,10 @@ Audio.mp3  ──>  Audio (1).mp3  ──>  Audio (2).mp3
 ```
 
 Additional safety mechanisms:
+- **Strict Destination Enforcement**: Choose between the configured default directory, saving beside the original source file, or choosing any custom folder.
 - **Automatic Duplicate Resolution**: Automatically increments filename index on collision.
 - **Atomic Staging Files**: Temporary processing files (`.tmp_*`) are staged and integrity-verified before moving to the destination folder.
 - **Storage Pre-flight Check**: Verifies free storage space before starting a conversion.
-- **Native Android StatFs**: Real-time device storage inspection showing total, used, and free storage space.
 
 ---
 
@@ -123,15 +125,14 @@ Additional safety mechanisms:
 
 ---
 
-## 💻 V2A Desktop (Windows 10/11 & macOS)
+## 💻 V2A Desktop (Windows, macOS, Linux)
 
-V2A v1.2.0 introduces a dedicated, high-performance native desktop application for **Windows** and **macOS**.  
-Built with Flutter Desktop and compiled into native 64-bit machine code — **no Electron, no webview wrappers, and no localhost servers**.
+V2A Desktop is a native 64-bit application built with Flutter Desktop and compiled into native machine code — **no Electron, no webview wrappers, and no localhost servers**.
 
 ### Desktop Highlights:
-- **Native OS Software**: 1280x720 default window, minimum size 1000x650 enforced via `window_manager`.
+- **Cross-Platform Native Software**: Windows 10/11, macOS (Apple Silicon & Intel), and Linux (Debian, Ubuntu, Fedora, RHEL, Arch).
 - **8-Item Sidebar Navigation**: Home, Audio Converter, Queue, Trimmer, Studio Player, History, Settings, About.
-- **Hardware-Accelerated Streaming FFmpeg**: Utilizes native Dart Process APIs with `-progress pipe:1 -nostats` streaming progress, speed ratios, and ETA remaining.
+- **Hardware-Accelerated Streaming FFmpeg**: Utilizes native Dart Process APIs with `-progress pipe:1 -nostats` real-time progress parsing without 99% progress jump bugs.
 - **Complete & Lite Editions**:
   - **Complete Edition**: Bundled with static `ffmpeg` and `ffprobe` binaries for 100% offline self-containment.
   - **Lite Edition**: Lightweight (~20 MB compressed) utilizing system PATH FFmpeg.
@@ -144,57 +145,41 @@ Built with Flutter Desktop and compiled into native 64-bit machine code — **no
   - `Ctrl + ,` / `Cmd + ,`: Open Settings
   - `Ctrl + Shift + C`: Clear Completed Queue
 
-### Desktop Downloads & Packages:
-| OS / Distribution | Format | Installer File | Purpose |
-|---|---|---|---|
-| **Windows 10/11 (64-bit)** | Inno Setup EXE | `V2A-Setup-1.2.0-x64.exe` | Standard Windows installer with Start Menu & Desktop shortcuts |
-| **Windows 10/11 (64-bit)** | Portable ZIP | `V2A-1.2.0-Windows-x64-Portable.zip` | Standalone portable zero-install package |
-| **Windows Enterprise** | WiX MSI | `V2A-1.2.0-x64.msi` | Enterprise Group Policy (GPO) and Intune deployment |
-| **macOS (Universal 2)** | Disk Image (DMG) | `V2A-1.2.0-macOS.dmg` | Drag-and-drop installer for Apple Silicon (M1/M2/M3/M4) & Intel |
-| **macOS (Universal 2)** | Package (PKG) | `V2A-1.2.0-macOS.pkg` | Component package installer for `/Applications` |
-
-### Detailed Documentation:
-- [Desktop Architecture & Platform Isolation](docs/DESKTOP_ARCHITECTURE.md)
-- [Windows Build & Packaging Guide](docs/WINDOWS_BUILD.md)
-- [macOS Build & Packaging Guide](docs/MACOS_BUILD.md)
-- [FFmpeg Desktop Setup Guide](docs/FFmpeg_SETUP.md)
-- [Desktop Verification & Testing](docs/DESKTOP_TESTING.md)
-- [Package Size & Memory Analysis](docs/DESKTOP_PACKAGE_SIZE_REPORT.md)
-- [Installation Guide](docs/INSTALLATION.md)
-
 ---
 
-## 🏗️ Architecture and APK Downloads
+## 📦 Downloads & Release Packages
 
-V2A provides separate APK builds for different Android processor architectures to minimize download and installation size:
+All release packages are available on the [Releases page](https://github.com/margacis2/v2a/releases):
 
-| Architecture | Target Devices | Release APK | Size |
-|---|---|---|---|
-| **ARM64 (`arm64-v8a`)** | **Modern Android phones and tablets (Recommended)** | `V2A-arm64-v8a-release.apk` | **~62.4 MB** |
-| **ARMv7 (`armeabi-v7a`)** | Compatible 32-bit Android devices | `V2A-armeabi-v7a-release.apk` | **~96.3 MB** |
-| **x86_64 (`x86_64`)** | Android Studio emulators and compatible Chromebooks | `V2A-x86_64-release.apk` | **~70.2 MB** |
-| **Universal** | All architectures bundled in a single APK | `V2A-universal-release.apk` | **~224.7 MB** |
-| **Android App Bundle** | **Google Play distribution ONLY** | `V2A-release.aab` | **~137.5 MB** |
+### Windows Desktop (10 / 11 64-bit)
+| Format | Installer File | Purpose |
+|---|---|---|
+| **Inno Setup EXE** | `V2A-Setup-1.2.1-x64.exe` | Standard Windows installer with Start Menu & Desktop shortcuts |
+| **WiX MSI** | `V2A-1.2.1-x64.msi` | Enterprise Group Policy (GPO) and Intune deployment |
+| **Portable ZIP** | `V2A-1.2.1-Windows-x64-Portable.zip` | Standalone portable zero-install package |
 
-### Which APK should I download?
-- **Most modern Android phones (2016+)**: Download **`V2A-arm64-v8a-release.apk`**.
-- **Older 32-bit phones**: Download **`V2A-armeabi-v7a-release.apk`**.
-- **Android emulators / ChromeOS**: Download **`V2A-x86_64-release.apk`**.
-- **Unsure about your hardware**: Download **`V2A-universal-release.apk`**.
+### macOS Desktop (Apple Silicon & Intel)
+| Format | Installer File | Purpose |
+|---|---|---|
+| **Apple Disk Image (DMG)** | `V2A-1.2.1-macOS.dmg` | Drag-and-drop installer for macOS |
+| **Apple Component Package (PKG)** | `V2A-1.2.1-macOS.pkg` | Component package installer for `/Applications` |
 
-📦 **Downloads:** [Visit V2A GitHub Releases](https://github.com/margacis2/v2a/releases)
+### Linux Desktop (x64)
+| Format | Installer File | Purpose |
+|---|---|---|
+| **Debian / Ubuntu Package** | `V2A-1.2.1-Linux-x64.deb` | Standard package for Ubuntu, Debian, Linux Mint, Pop!_OS |
+| **Fedora / RHEL Package** | `V2A-1.2.1-Linux-x64.rpm` | Package for Fedora, Red Hat Enterprise Linux, openSUSE |
+| **Universal AppImage** | `V2A-1.2.1-x86_64.AppImage` | Portable self-contained executable for all Linux distributions |
+| **Portable Tarball** | `V2A-1.2.1-Linux-x64-Portable.tar.gz` | Portable extract-and-run archive |
 
----
-
-## 📱 System Requirements
-
-| Requirement | Details |
-|---|---|
-| **Operating System** | Android 7.0 (API level 24) or newer |
-| **Recommended Android** | Android 13 (API level 33) or newer |
-| **Architecture** | ARM64 (`arm64-v8a`), ARMv7 (`armeabi-v7a`), or x86_64 |
-| **Storage** | Minimum 100 MB free space for app; conversion storage depends on input file sizes |
-| **RAM** | Minimum 2 GB (512 MB free during heavy conversion batches) |
+### Android (APK & App Bundle)
+| Architecture | Target Devices | Release APK |
+|---|---|---|
+| **ARM64 (`arm64-v8a`)** | **Modern Android phones and tablets (Recommended)** | `V2A-arm64-v8a-release.apk` |
+| **ARMv7 (`armeabi-v7a`)** | Compatible 32-bit Android devices | `V2A-armeabi-v7a-release.apk` |
+| **x86_64 (`x86_64`)** | Android Studio emulators and compatible Chromebooks | `V2A-x86_64-release.apk` |
+| **Universal** | All architectures bundled in a single APK | `V2A-universal-release.apk` |
+| **Android App Bundle** | **Google Play distribution ONLY** | `V2A-release.aab` |
 
 ---
 
@@ -202,92 +187,47 @@ V2A provides separate APK builds for different Android processor architectures t
 
 ### Prerequisites
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) (3.12.2+ or latest stable)
-- [Android Studio](https://developer.android.com/studio) with Android SDK and NDK installed
 - Java 17 JDK
 - Git
+- Platform build tools:
+  - **Android**: Android Studio with Android SDK and NDK
+  - **Windows**: Visual Studio 2022 with Desktop development with C++
+  - **macOS**: Xcode 15+
+  - **Linux**: `clang`, `cmake`, `ninja-build`, `pkg-config`, `libgtk-3-dev`, `liblzma-dev`
 
-### Installation Steps
+### Build Commands
 
 ```bash
-# 1. Clone the repository
+# 1. Clone repository & fetch dependencies
 git clone https://github.com/margacis2/v2a.git
 cd v2a
-
-# 2. Install dependencies
 flutter pub get
 
-# 3. Run tests
+# 2. Run automated test suite
 flutter test
 
-# 4. Build architecture-specific APKs (Split per ABI)
-flutter build apk --release --split-per-abi
-
-# 5. Build a Universal APK
-flutter build apk --release
-
-# 6. Build an Android App Bundle (for Google Play)
-flutter build appbundle --release
+# 3. Build for your target platform:
+flutter build windows --release       # Windows 64-bit
+flutter build macos --release         # macOS
+flutter build linux --release         # Linux x64
+flutter build apk --split-per-abi     # Android Split APKs
+flutter build apk --release           # Android Universal APK
+flutter build appbundle --release     # Android App Bundle
 ```
-
-### Build Output Locations
-```text
-build/
-└── app/
-    └── outputs/
-        ├── flutter-apk/
-        └── bundle/
-            └── release/
-```
-
----
-
-## 🧰 Technology Stack
-
-| Technology | Purpose |
-|---|---|
-| **Flutter** | Cross-platform Android UI framework |
-| **Dart** | Modern reactive application logic |
-| **FFmpeg** (`ffmpeg_kit_flutter_new`) | High-performance audio extraction and encoding engine |
-| **Android Media3 ExoPlayer** | Hardware-accelerated streaming video playback |
-| **`just_audio`** | Advanced audio player engine |
-| **`audio_service`** | Android background audio service and lock-screen notification controls |
-| **SQLite** (`sqflite`) | Persistent local conversion database and job queue |
-
----
-
-## 🔐 Privacy
-
-V2A is designed from the ground up to process media **100% locally** on your Android device:
-- All audio extraction, transcoding, and trimming operations execute entirely offline.
-- No network connection or cloud server is required for conversion functionality.
-- Your media files and personal data never leave your device.
 
 ---
 
 ## 📄 License
 
 - **Application Source Code**: Licensed under the **[MIT License](LICENSE)**.
-- **FFmpeg Binaries**: The precompiled FFmpeg binary package used by this project (`ffmpeg-kit-full-gpl`) is distributed under **[GNU General Public License v3.0 (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.en.html)**.
+- **FFmpeg Binaries**: The precompiled FFmpeg binary package used by this project is distributed under **[GNU General Public License v3.0 (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.en.html)**.
 - **Other Dependencies**: Governed by their respective open-source licenses (Apache 2.0, BSD-3-Clause, MIT).
-
-*Users and redistributors should review applicable third-party license terms prior to commercial distribution.*
-
----
-
-## 🤝 Contributions
-
-Suggestions, bug reports, and pull requests are welcome!
-
-If you find an issue or have an idea to improve V2A:
-1. Open an issue describing the problem or proposal.
-2. Include device model, Android version, and steps to reproduce.
-3. Submit a pull request if you have a proposed fix.
 
 ---
 
 ## 👨‍💻 Project
 
-**V2A — Video-to-Audio Converter for Android**  
+**V2A — Video-to-Audio Studio**  
 *Developed with Flutter and FFmpeg.*  
 
 [GitHub Repository](https://github.com/margacis2/v2a) · [Releases](https://github.com/margacis2/v2a/releases) · [Issues](https://github.com/margacis2/v2a/issues)

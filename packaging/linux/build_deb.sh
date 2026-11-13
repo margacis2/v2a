@@ -55,3 +55,4 @@ EOF
 
 dpkg-deb --build "$STAGE_DIR" "$DIST_DIR/V2A-${VERSION}-Linux-x64.deb"
 echo "DEB package created at: $DIST_DIR/V2A-${VERSION}-Linux-x64.deb"
+

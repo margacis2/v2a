@@ -8,3 +8,4 @@ Type=Application
 Categories=AudioVideo;Audio;AudioVideoEditing;
 StartupNotify=true
 MimeType=audio/*;video/*;
+
