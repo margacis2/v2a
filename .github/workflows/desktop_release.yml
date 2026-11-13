@@ -194,7 +194,7 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release_assets/*
+          files: release_assets/**/*
           name: "V2A v1.2.0 — Multi-Platform Release (Android, Windows, macOS)"
           body_path: RELEASE_NOTES.md
           draft: false
