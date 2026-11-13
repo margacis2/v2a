@@ -35,15 +35,5 @@
         <RegistryValue Root="HKCU" Key="Software\V2A\v2a" Name="desktopShortcut" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
-
-    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-      <Component Id="MainExecutable" Guid="3E46C827-0248-4318-B549-BF265538C53F" Win64="yes">
-        <File Id="V2AExe" Source="$(var.SourceDir)\v2a.exe" KeyPath="yes" />
-      </Component>
-      <Component Id="FlutterEngineDll" Guid="9803C12F-D8A3-41E7-8051-A3C08985C199" Win64="yes">
-        <File Id="FlutterEngineDll" Source="$(var.SourceDir)\flutter_windows.dll" KeyPath="yes" />
-      </Component>
-    </ComponentGroup>
   </Product>
 </Wix>
-

@@ -28,8 +28,8 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install Inno Setup
-        run: choco install innosetup --yes
+      - name: Install Inno Setup and WiX Toolset
+        run: choco install innosetup wixtoolset --yes
 
       - name: Verify Environment
         run: flutter doctor -v
@@ -50,6 +50,10 @@ jobs:
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" packaging\windows\v2a_setup.iss
 
+      - name: Build WiX MSI Installer
+        run: |
+          powershell -ExecutionPolicy Bypass -File packaging\windows\build_msi.ps1
+
       - name: Build Portable ZIP
         run: |
           powershell -ExecutionPolicy Bypass -File packaging\windows\build_portable.ps1 -Mode lite
@@ -60,6 +64,7 @@ jobs:
           name: v2a-windows-1.2.0
           path: |
             dist/V2A-Setup-1.2.0-x64.exe
+            dist/V2A-1.2.0-x64.msi
             dist/V2A-1.2.0-Windows-x64-Portable.zip
 
   # ==========================================
