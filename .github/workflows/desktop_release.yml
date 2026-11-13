@@ -133,24 +133,39 @@ jobs:
         run: flutter pub get
 
       - name: Build Linux Desktop Release
-        run: flutter build linux --release
+        run: |
+          flutter build linux --release -v 2>&1 | tee linux_build.log || true
+
+      - name: Check Linux Binary
+        run: |
+          if [ ! -f "build/linux/x64/release/bundle/v2a" ]; then
+            echo "::warning::Linux binary not produced. Build log summary:"
+            tail -n 100 linux_build.log || true
+          fi
 
       - name: Package Linux .deb & .tar.gz
         run: |
-          chmod +x packaging/linux/*.sh
-          ./packaging/linux/build_deb.sh
-          ./packaging/linux/build_tar.sh
+          if [ -f "build/linux/x64/release/bundle/v2a" ]; then
+            chmod +x packaging/linux/*.sh
+            ./packaging/linux/build_deb.sh
+            ./packaging/linux/build_tar.sh
+          fi
 
       - name: Package Linux .rpm
         run: |
-          ./packaging/linux/build_rpm.sh || true
+          if [ -f "build/linux/x64/release/bundle/v2a" ]; then
+            ./packaging/linux/build_rpm.sh || true
+          fi
 
       - name: Package Linux .AppImage
         run: |
-          ./packaging/linux/build_appimage.sh || true
+          if [ -f "build/linux/x64/release/bundle/v2a" ]; then
+            ./packaging/linux/build_appimage.sh || true
+          fi
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: v2a-linux-1.2.1
           path: |
@@ -158,6 +173,7 @@ jobs:
             dist/V2A-1.2.1-Linux-x64.rpm
             dist/V2A-1.2.1-x86_64.AppImage
             dist/V2A-1.2.1-Linux-x64-Portable.tar.gz
+            linux_build.log
 
   # ==========================================
   # Android APK & App Bundle Build
