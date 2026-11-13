@@ -1,7 +1,26 @@
-# V2A — Video-to-Audio Converter v1.0.0 Release Notes
+# V2A — Release Notes
 
-## Overview
-V2A is a high-performance, private, and fully offline Android application engineered for extracting audio from video files and converting between audio formats with studio-grade fidelity and maximum efficiency.
+---
+
+## What's New in v1.2.0
+
+### 1. Native Desktop Support (Windows 10/11 & macOS)
+* **Native Desktop Software**: True 64-bit native Flutter Desktop compilation — 0% Electron, 0% WebView wrappers, 0% localhost servers.
+* **Unified Brand Identity**: Windows `.ico` and macOS `Assets.xcassets` application icons now match the official V2A Android launcher icon.
+* **Desktop Workspaces**: 8-item dedicated navigation sidebar (Home, Converter, Batch Queue, Trimmer, Studio Player, Conversion History, Settings, About).
+* **High-Speed Streaming FFmpeg Engine**: Native process spawning with progress pipe streaming, real-time FPS/speed ratios, and cancellation handling.
+* **Desktop Packaging Formats**:
+  * Windows Inno Setup EXE (`V2A-Setup-1.2.0-x64.exe`)
+  * Windows Portable ZIP (`V2A-1.2.0-Windows-x64-Portable.zip`)
+  * Windows Enterprise WiX MSI (`V2A-1.2.0-x64.msi`)
+  * macOS Universal 2 DMG (`V2A-1.2.0-macOS.dmg`)
+  * macOS Component PKG (`V2A-1.2.0-macOS.pkg`)
+
+### 2. Android v1.2.0 Synchronization
+* **Version Parity**: Upgraded Android app version code to 2 and version name to 1.2.0 in sync with the multi-platform release.
+* **Settings & About Updates**: Reflected Version 1.2.0 across settings and documentation.
+* **F-Droid Metadata**: Updated F-Droid build configuration to build `v1.2.0`.
+* **Zero Breaking Changes**: Maintained 100% Android protection — Android builds, manifest, and features remain completely intact.
 
 ---
 

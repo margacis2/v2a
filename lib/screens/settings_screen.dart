@@ -514,7 +514,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const ListTile(
                   leading: Icon(Icons.verified_rounded, color: Colors.green),
                   title: Text('V2A Audio Converter', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  subtitle: Text('Version 1.0.0 • Professional Edition', style: TextStyle(fontSize: 12)),
+                  subtitle: Text('Version 1.2.0 • Professional Edition', style: TextStyle(fontSize: 12)),
                 ),
                 const Divider(height: 1),
                 ListTile(

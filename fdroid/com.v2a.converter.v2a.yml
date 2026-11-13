@@ -31,7 +31,19 @@ Builds:
     build:
       - flutter build apk --release
 
+  - versionName: 1.2.0
+    versionCode: 2
+    commit: v1.2.0
+    subdir: android
+    output: app/build/outputs/apk/release/app-release.apk
+    srclibs:
+      - flutter@3.12.2
+    prebuild:
+      - flutter pub get
+    build:
+      - flutter build apk --release
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.0.0
-CurrentVersionCode: 1
+CurrentVersion: 1.2.0
+CurrentVersionCode: 2
