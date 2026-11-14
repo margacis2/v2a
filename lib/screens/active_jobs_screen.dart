@@ -691,6 +691,8 @@ class _ActiveJobsScreenState extends State<ActiveJobsScreen> {
       case JobStatus.running:
       case JobStatus.finalizing:
       case JobStatus.preparing:
+      case JobStatus.validating:
+      case JobStatus.inspecting:
         return const Color(0xFF1E88E5);
       case JobStatus.queued:
         return Colors.orange;
@@ -714,6 +716,8 @@ class _ActiveJobsScreenState extends State<ActiveJobsScreen> {
         return Icons.sync_rounded;
       case JobStatus.finalizing:
       case JobStatus.preparing:
+      case JobStatus.validating:
+      case JobStatus.inspecting:
         return Icons.hourglass_top_rounded;
       case JobStatus.queued:
         return Icons.schedule_rounded;

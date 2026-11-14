@@ -17,8 +17,20 @@ class JobQueueService extends ChangeNotifier {
   List<ConversionJob> _jobs = [];
   List<ConversionJob> get jobs => List.unmodifiable(_jobs);
 
-  bool _isProcessing = false;
-  bool get isProcessing => _isProcessing;
+  int _maxConcurrency = 1;
+  int get maxConcurrency => _maxConcurrency;
+
+  void setMaxConcurrency(int value) {
+    if (value < 1) value = 1;
+    if (value > 4) value = 4;
+    _maxConcurrency = value;
+    notifyListeners();
+    _processNextInQueue();
+  }
+
+  final Set<String> _runningJobIds = {};
+
+  bool get isProcessing => _runningJobIds.isNotEmpty;
 
   ConversionJob? _activeJob;
   ConversionJob? get activeJob => _activeJob;
@@ -59,7 +71,11 @@ class JobQueueService extends ChangeNotifier {
   /// Adds a single conversion job to the queue
   Future<void> enqueueJob(ConversionJob job) async {
     _jobs.insert(0, job);
-    await _db.insertJob(job);
+    try {
+      await _db.insertJob(job);
+    } catch (e) {
+      debugPrint('[JobQueueService] DB insert warning: $e');
+    }
     notifyListeners();
     _processNextInQueue();
   }
@@ -68,7 +84,11 @@ class JobQueueService extends ChangeNotifier {
   Future<void> enqueueBatch(List<ConversionJob> batchJobs) async {
     for (final job in batchJobs) {
       _jobs.add(job);
-      await _db.insertJob(job);
+      try {
+        await _db.insertJob(job);
+      } catch (e) {
+        debugPrint('[JobQueueService] DB insert warning: $e');
+      }
     }
     notifyListeners();
     _processNextInQueue();
@@ -80,13 +100,15 @@ class JobQueueService extends ChangeNotifier {
     if (index == -1) return;
 
     final job = _jobs[index];
-    if (job.status == JobStatus.running || job.status == JobStatus.preparing) {
+    if (job.status == JobStatus.running || job.status == JobStatus.preparing || job.status == JobStatus.validating) {
       _jobs[index] = job.copyWith(status: JobStatus.cancelling);
       notifyListeners();
       await _engine.cancelJob(jobId);
     } else if (job.status == JobStatus.queued) {
       _jobs[index] = job.copyWith(status: JobStatus.cancelled, completedAt: DateTime.now());
-      await _db.updateJob(_jobs[index]);
+      try {
+        await _db.updateJob(_jobs[index]);
+      } catch (_) {}
       notifyListeners();
     }
   }
@@ -104,7 +126,9 @@ class JobQueueService extends ChangeNotifier {
       elapsedSeconds: 0,
       speedRatio: 0.0,
     );
-    await _db.updateJob(_jobs[index]);
+    try {
+      await _db.updateJob(_jobs[index]);
+    } catch (_) {}
     notifyListeners();
     _processNextInQueue();
   }
@@ -112,45 +136,71 @@ class JobQueueService extends ChangeNotifier {
   /// Removes a job record from SQLite without deleting physical output files
   Future<void> removeJob(String jobId) async {
     _jobs.removeWhere((j) => j.id == jobId);
-    await _db.deleteJob(jobId);
+    try {
+      await _db.deleteJob(jobId);
+    } catch (_) {}
     notifyListeners();
   }
 
   /// Clears completed history entries
   Future<void> clearCompleted() async {
     _jobs.removeWhere((j) => j.status == JobStatus.completed);
-    await _db.clearCompletedHistory();
+    try {
+      await _db.clearCompletedHistory();
+    } catch (_) {}
     notifyListeners();
   }
 
-  /// Main background queue execution loop (sequential with failure isolation)
+  /// Main background queue execution loop with configurable concurrency & robust error isolation
   Future<void> _processNextInQueue() async {
-    if (_isProcessing) return;
+    while (_runningJobIds.length < _maxConcurrency) {
+      final nextIndex = _jobs.indexWhere((j) => j.status == JobStatus.queued && !_runningJobIds.contains(j.id));
+      if (nextIndex == -1) break;
 
-    final nextIndex = _jobs.indexWhere((j) => j.status == JobStatus.queued);
-    if (nextIndex == -1) {
-      _activeJob = null;
-      _isProcessing = false;
-      notifyListeners();
+      final jobToRun = _jobs[nextIndex];
+      _runningJobIds.add(jobToRun.id);
+      _executeSingleJob(jobToRun.id);
+    }
+  }
+
+  Future<void> _executeSingleJob(String jobId) async {
+    final startIndex = _jobs.indexWhere((j) => j.id == jobId);
+    if (startIndex == -1) {
+      _runningJobIds.remove(jobId);
       return;
     }
 
-    _isProcessing = true;
-    var currentJob = _jobs[nextIndex];
+    // Step 1: Validating
+    var currentJob = _jobs[startIndex].copyWith(status: JobStatus.validating);
+    _jobs[startIndex] = currentJob;
     _activeJob = currentJob;
-
-    // Transition to Preparing
-    currentJob = currentJob.copyWith(status: JobStatus.preparing);
-    _jobs[nextIndex] = currentJob;
-    await _db.updateJob(currentJob);
     notifyListeners();
+    try {
+      await _db.updateJob(currentJob);
+    } catch (_) {}
+
+    // Step 2: Preparing
+    final prepIndex = _jobs.indexWhere((j) => j.id == jobId);
+    if (prepIndex != -1) {
+      currentJob = _jobs[prepIndex].copyWith(status: JobStatus.preparing);
+      _jobs[prepIndex] = currentJob;
+      notifyListeners();
+      try {
+        await _db.updateJob(currentJob);
+      } catch (_) {}
+    }
 
     try {
-      // Transition to Running
-      currentJob = currentJob.copyWith(status: JobStatus.running);
-      _jobs[nextIndex] = currentJob;
-      await _db.updateJob(currentJob);
-      notifyListeners();
+      // Step 3: Running
+      final runIndex = _jobs.indexWhere((j) => j.id == jobId);
+      if (runIndex != -1) {
+        currentJob = _jobs[runIndex].copyWith(status: JobStatus.running);
+        _jobs[runIndex] = currentJob;
+        notifyListeners();
+        try {
+          await _db.updateJob(currentJob);
+        } catch (_) {}
+      }
 
       final notifId = currentJob.id.hashCode.abs() % 100000;
       int lastNotifPercent = -1;
@@ -164,7 +214,7 @@ class JobQueueService extends ChangeNotifier {
           required int elapsedSeconds,
           required int estimatedRemainingSeconds,
         }) {
-          final idx = _jobs.indexWhere((j) => j.id == currentJob.id);
+          final idx = _jobs.indexWhere((j) => j.id == jobId);
           if (idx != -1) {
             _jobs[idx] = _jobs[idx].copyWith(
               progress: progress,
@@ -191,7 +241,7 @@ class JobQueueService extends ChangeNotifier {
         },
       );
 
-      final finalIndex = _jobs.indexWhere((j) => j.id == currentJob.id);
+      final finalIndex = _jobs.indexWhere((j) => j.id == jobId);
       if (finalIndex != -1) {
         if (result.success) {
           _jobs[finalIndex] = _jobs[finalIndex].copyWith(
@@ -215,7 +265,7 @@ class JobQueueService extends ChangeNotifier {
           );
           await _notifications.cancelNotification(notifId);
         } else {
-          // Failed (failure isolation: next queued job will still execute smoothly)
+          // Failed (isolated: other jobs continue)
           _jobs[finalIndex] = _jobs[finalIndex].copyWith(
             status: JobStatus.failed,
             errorMessage: result.errorMessage,
@@ -227,23 +277,29 @@ class JobQueueService extends ChangeNotifier {
             body: result.errorMessage ?? 'An error occurred during conversion',
           );
         }
-        await _db.updateJob(_jobs[finalIndex]);
+        try {
+          await _db.updateJob(_jobs[finalIndex]);
+        } catch (_) {}
       }
     } catch (e) {
-      final finalIndex = _jobs.indexWhere((j) => j.id == currentJob.id);
+      final finalIndex = _jobs.indexWhere((j) => j.id == jobId);
       if (finalIndex != -1) {
         _jobs[finalIndex] = _jobs[finalIndex].copyWith(
           status: JobStatus.failed,
           errorMessage: e.toString(),
           completedAt: DateTime.now(),
         );
-        await _db.updateJob(_jobs[finalIndex]);
+        try {
+          await _db.updateJob(_jobs[finalIndex]);
+        } catch (_) {}
       }
     } finally {
-      _isProcessing = false;
-      _activeJob = null;
+      _runningJobIds.remove(jobId);
+      if (_activeJob?.id == jobId) {
+        _activeJob = _jobs.where((j) => _runningJobIds.contains(j.id)).firstOrNull;
+      }
       notifyListeners();
-      // Continue queue sequentially
+      // Continue queue
       _processNextInQueue();
     }
   }

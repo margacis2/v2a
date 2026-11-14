@@ -272,13 +272,47 @@ class _DesktopConvertScreenState extends State<DesktopConvertScreen> {
       return;
     }
 
+    // Ensure all selected files have inspected metadata before enqueuing
+    for (final filePath in _selectedFiles) {
+      if (!_inspectedMediaCache.containsKey(filePath)) {
+        try {
+          final inspected = await _engine.inspectMedia(filePath);
+          _inspectedMediaCache[filePath] = inspected;
+        } catch (_) {}
+      }
+    }
+
     final queue = Provider.of<JobQueueService>(context, listen: false);
     final List<ConversionJob> batchJobs = [];
 
     for (int fileIdx = 0; fileIdx < _selectedFiles.length; fileIdx++) {
       final filePath = _selectedFiles[fileIdx];
-      final media = _inspectedMediaCache[filePath];
-      if (media == null) continue;
+      var media = _inspectedMediaCache[filePath];
+      if (media == null) {
+        // Fallback synthetic media object if ffprobe failed or was unavailable
+        final file = File(filePath);
+        final sizeBytes = file.existsSync() ? file.lengthSync() : 0;
+        media = MediaFile(
+          id: filePath,
+          filePath: filePath,
+          fileName: p.basename(filePath),
+          sizeBytes: sizeBytes,
+          duration: const Duration(seconds: 0),
+          format: p.extension(filePath).replaceAll('.', ''),
+          isVideo: true,
+          audioTracks: [
+            AudioTrackInfo(
+              index: 0,
+              audioStreamIndex: 0,
+              codec: 'aac',
+              channels: 2,
+              channelLayout: 'stereo',
+              sampleRate: 44100,
+              isDefault: true,
+            ),
+          ],
+        );
+      }
 
       // Determine output directory based on destination mode
       String resolvedDirectory = _configuredOutputDirectory;

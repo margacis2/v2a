@@ -2,7 +2,7 @@
 # Script to build AppImage for Linux
 set -euo pipefail
 
-VERSION="1.2.1"
+VERSION="1.2.2"
 DIST_DIR="dist"
 APP_DIR="build/v2a.AppDir"
 BUNDLE_DIR="build/linux/x64/release/bundle"

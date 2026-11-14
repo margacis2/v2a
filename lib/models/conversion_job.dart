@@ -2,6 +2,8 @@ import 'conversion_config.dart';
 
 enum JobStatus {
   queued('Queued'),
+  validating('Validating'),
+  inspecting('Inspecting'),
   preparing('Preparing'),
   running('Running'),
   finalizing('Finalizing'),
@@ -16,7 +18,7 @@ enum JobStatus {
   final String label;
   const JobStatus(this.label);
 
-  bool get isActive => this == JobStatus.queued || this == JobStatus.preparing || this == JobStatus.running || this == JobStatus.finalizing;
+  bool get isActive => this == JobStatus.queued || this == JobStatus.validating || this == JobStatus.inspecting || this == JobStatus.preparing || this == JobStatus.running || this == JobStatus.finalizing;
   bool get isFinished => this == JobStatus.completed || this == JobStatus.failed || this == JobStatus.cancelled || this == JobStatus.interrupted;
 }
 

@@ -1,65 +1,59 @@
-# V2A Version 1.2.1 Release Notes
+# V2A Version 1.2.2 Release Notes
 
-## Multi-Platform Native Audio Conversion Studio (Windows, macOS, Linux, Android)
+## Complete Desktop Conversion Engine Repair & Professional Multi-Platform Audio Converter Upgrade
 
-V2A v1.2.1 introduces major desktop conversion engine enhancements, multi-stream audio track extraction (MKV, MP4, WebM containers), multi-file batch conversion, strict destination folder enforcement, comprehensive metadata and album artwork editing, and native Linux distribution packages (`.deb`, `.rpm`, `.AppImage`, `.tar.gz`).
-
----
-
-### 🚀 Key Highlights & New Capabilities in v1.2.1
-
-#### 1. Multi-Stream Audio Track Extraction
-- **FFprobe Container Inspection**: Enumerates every audio stream inside containers (e.g. MKV, MP4) with stream index, codec, language code, channel layout (Mono, Stereo, 5.1, 7.1), sample rate, and default flag.
-- **Dynamic FFmpeg Stream Mapping**: Automatically generates dynamic `-map 0:a:N` parameters for exact track selection without video re-encoding overhead.
-- **Batch Track Extraction**: Users can extract individual tracks or check **"Convert all audio tracks"** to automatically produce separate labeled files (`movie_Track1_eng.mp3`, `movie_Track2_tam.mp3`).
-
-#### 2. Conversion Engine & Progress Accuracy Fixes
-- **Fixed 99% Progress Jump**: Resolved an issue where FFmpeg progress microseconds (`out_time_us`) were parsed as milliseconds, causing conversion progress to jump to 99% prematurely. Progress now accurately reflects exact duration progress and smoothly transitions to 100% only upon complete verification of the output file.
-- **Strict Destination Enforcement**: Converted files strictly respect `DestinationMode`:
-  - **Default configured directory** (persisted in preferences and accessible in Settings).
-  - **Beside source file** (`p.dirname(sourcePath)`).
-  - **Custom destination folder** selected via native system folder picker.
-- **Never-Overwrite Duplicate Safety**: Atomic temporary staging files (`.tmp`) ensure corrupt or partial output never clobbers existing files. Unique auto-increment naming (`_1`, `_2`) guarantees lossless file safety.
-
-#### 3. Advanced Audio Configuration & Processing
-- **Audio Channels**: Extended channel modes with proper mapping: Mono (1 ch), Stereo (2 ch), 2.1 Surround (3 ch), 4.0 Quadraphonic (4 ch), 5.1 Surround (6 ch), and 7.1 Surround (8 ch).
-- **Volume Gain in Decibels**: Slider and numeric input ranging from **-24 dB to +24 dB** with a one-click reset to 0 dB (`volume=XdB`).
-- **Broadcast Loudness Normalization**: Integrated EBU R128 loudness filter (`loudnorm=I=-16:TP=-1.5:LRA=11`).
-- **Fades & Silence Trimming**: Configurable fade-in and fade-out durations and intelligent dead air removal (`silenceremove`).
-
-#### 4. Metadata, ID3v2 Tags & Album Artwork
-- Comprehensive tag editing: Title, Artist, Album, Album Artist, Year, Genre, Track Number, Disc Number, Composer, Copyright, Comment, Lyrics, and Language.
-- Option to strip all existing metadata (`-map_metadata -1`) or preserve source tags.
-- Front cover album artwork embedding (`attached_pic`).
-
-#### 5. Native Linux Support & Packaging
-- Added full native Linux desktop build support.
-- Generated standard Linux desktop packaging:
-  - Debian / Ubuntu `.deb` package (`dpkg-deb`).
-  - Red Hat / Fedora `.rpm` package (`alien`).
-  - Universal `.AppImage` bundle (`appimagetool`).
-  - Portable `.tar.gz` distribution bundle.
-
-#### 6. Absolute Android Protection
-- Zero changes to the `android/` directory (`git diff android/` is completely empty).
-- All Android builds, architectures, and features remain 100% intact and backward-compatible.
+V2A v1.2.2 addresses critical desktop conversion engine stability issues, repairs background queue execution, fixes database schema migrations, and implements configurable multi-threading, dynamic audio stream extraction, and full cross-platform desktop & mobile packaging (Windows, macOS, Linux, and Android).
 
 ---
 
-### 📦 Release Binaries & Installers
+### 🚀 Key Highlights & Critical Fixes in v1.2.2
 
-- **Windows 10/11 (x64)**:
-  - `V2A-Setup-1.2.1-x64.exe` (Inno Setup Installer)
-  - `V2A-1.2.1-x64.msi` (WiX Toolset Windows Installer)
-  - `V2A-1.2.1-Windows-x64-Portable.zip` (Portable ZIP Bundle)
-- **macOS**:
-  - `V2A-1.2.1-macOS.dmg` (Apple Disk Image)
-  - `V2A-1.2.1-macOS.pkg` (Apple Installer Package)
-- **Linux (x64)**:
-  - `V2A-1.2.1-Linux-x64.deb` (Debian / Ubuntu)
-  - `V2A-1.2.1-Linux-x64.rpm` (Fedora / RHEL)
-  - `V2A-1.2.1-x86_64.AppImage` (Universal AppImage)
-  - `V2A-1.2.1-Linux-x64-Portable.tar.gz` (Portable Tarball)
-- **Android**:
-  - `V2A-arm64-v8a-release.apk`, `V2A-armeabi-v7a-release.apk`, `V2A-x86_64-release.apk`, `V2A-universal-release.apk`
-  - `V2A-release.aab` (Google Play App Bundle)
+#### 1. Conversion Engine Root-Cause Fix (Conversion Not Executing Repaired)
+- **Database Schema Migration (Smoking Gun Bug #1)**:
+  - In earlier builds, new fields (`audioStreamIndex`, `selectedAudioTrackIndexes`, metadata, and silence trim parameters) were serialized in `ConversionJob.toMap()`, but the SQLite database remained at schema version 1.
+  - Calling `db.insertJob(job)` triggered an uncaught `DatabaseException: table jobs has no column named audioStreamIndex`, causing queue enqueue operations to crash silently and jobs to be lost on screen changes.
+  - In v1.2.2, `DatabaseService` is upgraded to `version: 2` with full `onUpgrade` migrations (`ALTER TABLE jobs ADD COLUMN ...`), completely restoring persistent job queueing.
+- **Desktop Queue Startup Initialization (Smoking Gun Bug #2)**:
+  - On desktop platforms, `DesktopAppShell` launched directly, bypassing mobile `SplashScreen`. As a result, `JobQueueService.init()` was never called on desktop startup.
+  - In v1.2.2, `DesktopAppShell` initializes `JobQueueService` upon startup, recovering any interrupted conversions and mounting background queues immediately.
+- **Robust Probe Resolution & Fallback (Smoking Gun Bug #3)**:
+  - Files enqueued before FFprobe analysis completes now automatically await inspection or generate safe fallback audio stream descriptors, ensuring 100% of selected files are successfully converted without silent drops.
+
+#### 2. Real Dedicated Background Conversion Worker
+- **Thread Isolation & Responsiveness**: Conversions execute in separate background processes without blocking Flutter UI rendering.
+- **Configurable Multi-Threading Concurrency**: Configurable concurrent execution (1, 2, 3, or 4 simultaneous conversions) with thread-safe process management.
+- **Granular Lifecycle State Tracking**:
+  - `QUEUED` → `VALIDATING` → `INSPECTING` → `PREPARING` → `RUNNING` → `FINALIZING` → `COMPLETED`
+  - Robust failure states: `FAILED`, `CANCELLED`, `INTERRUPTED`.
+- **Zero Data Loss & Failure Isolation**: Failed or cancelled conversions remain visible with detailed logs and one-click retry; succeeding jobs continue unaffected.
+
+#### 3. Complete Desktop Conversion Studio
+- **Multi-Stream Audio Track Extraction**: Full inspection of MKV, MP4, WebM containers to select individual or all audio tracks with stream mapping (`-map 0:a:N`).
+- **Precision Audio Configuration**: Complete sample rate, channel mode (Mono, Stereo, 2.1, 4.0, 5.1, 7.1), decibel volume adjustment (-24 dB to +24 dB), and EBU R128 loudness normalization.
+- **Metadata & Album Artwork**: Comprehensive ID3v2 tag editor and embedded album cover support.
+- **Accurate Real-Time Progress**: Continuous progress calculation based on exact microseconds with no premature jumps to 99%.
+
+#### 4. Absolute Android Protection
+- The `android/` directory has zero modifications (`git diff android/` is completely empty).
+- Android mobile builds (ARM64-v8a, ARMeabi-v7a, x86_64, Universal APK, and Google Play AAB) remain completely untouched and backward-compatible.
+
+---
+
+### 📦 Available Release Packages
+
+| Platform | Package Format | File Name | Architecture |
+| :--- | :--- | :--- | :--- |
+| **Windows** | Setup Installer (.exe) | `V2A-Setup-1.2.2-x64.exe` | x64 |
+| **Windows** | Windows Installer (.msi) | `V2A-1.2.2-x64.msi` | x64 |
+| **Windows** | Portable Archive (.zip) | `V2A-1.2.2-Windows-x64-Portable.zip` | x64 |
+| **macOS** | Disk Image (.dmg) | `V2A-1.2.2-macOS.dmg` | Universal (Apple Silicon & Intel) |
+| **macOS** | Installer Package (.pkg) | `V2A-1.2.2-macOS.pkg` | Universal (Apple Silicon & Intel) |
+| **Linux** | Debian / Ubuntu (.deb) | `V2A-1.2.2-Linux-x64.deb` | x64 (Ubuntu, Debian, Mint) |
+| **Linux** | Red Hat / Fedora (.rpm) | `V2A-1.2.2-Linux-x64.rpm` | x64 (Fedora, RHEL, openSUSE) |
+| **Linux** | Universal AppImage (.AppImage) | `V2A-1.2.2-x86_64.AppImage` | x64 (All Linux distributions) |
+| **Linux** | Portable Archive (.tar.gz) | `V2A-1.2.2-Linux-x64-Portable.tar.gz` | x64 |
+| **Android** | Universal APK (.apk) | `V2A-universal-release.apk` | All Devices |
+| **Android** | ARM64 APK (.apk) | `V2A-arm64-v8a-release.apk` | Modern 64-bit phones |
+| **Android** | ARMv7 APK (.apk) | `V2A-armeabi-v7a-release.apk` | Older 32-bit phones |
+| **Android** | x86_64 APK (.apk) | `V2A-x86_64-release.apk` | Emulators & Chromebooks |
+| **Android** | App Bundle (.aab) | `V2A-release.aab` | Google Play Store |

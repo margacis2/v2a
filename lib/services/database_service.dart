@@ -31,7 +31,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         // Jobs table
         await db.execute('''
@@ -42,6 +42,8 @@ class DatabaseService {
             sourceSizeBytes INTEGER,
             sourceDurationMs INTEGER,
             selectedAudioTrackIndex INTEGER,
+            audioStreamIndex INTEGER DEFAULT 0,
+            selectedAudioTrackIndexes TEXT,
             selectedAudioCodec TEXT,
             format TEXT,
             mode TEXT,
@@ -58,12 +60,26 @@ class DatabaseService {
             fadeInSec REAL,
             fadeOutSec REAL,
             trimSilence INTEGER,
+            silenceThresholdDb REAL,
+            silenceMinDurationSec REAL,
+            silenceTrimMode TEXT,
+            destinationMode TEXT,
             metaTitle TEXT,
             metaArtist TEXT,
             metaAlbum TEXT,
+            metaAlbumArtist TEXT,
             metaYear TEXT,
             metaGenre TEXT,
+            metaTrackNumber TEXT,
+            metaDiscNumber TEXT,
+            metaComposer TEXT,
+            metaCopyright TEXT,
+            metaComment TEXT,
+            metaLyrics TEXT,
+            metaLanguage TEXT,
             metaArtwork TEXT,
+            metaStrip INTEGER,
+            metaPreserve INTEGER,
             requestedFileName TEXT,
             outputDirectory TEXT,
             finalOutputPath TEXT,
@@ -92,6 +108,44 @@ class DatabaseService {
             addedAt TEXT
           )
         ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          // Check and add missing columns if upgrading from version 1
+          final existingColumns = <String>{};
+          final info = await db.rawQuery('PRAGMA table_info(jobs)');
+          for (final row in info) {
+            final colName = row['name'] as String?;
+            if (colName != null) existingColumns.add(colName);
+          }
+
+          final newColumns = {
+            'audioStreamIndex': 'INTEGER DEFAULT 0',
+            'selectedAudioTrackIndexes': 'TEXT',
+            'silenceThresholdDb': 'REAL DEFAULT -50.0',
+            'silenceMinDurationSec': 'REAL DEFAULT 0.5',
+            'silenceTrimMode': 'TEXT DEFAULT "leadingAndTrailing"',
+            'destinationMode': 'TEXT DEFAULT "configuredDirectory"',
+            'metaAlbumArtist': 'TEXT',
+            'metaTrackNumber': 'TEXT',
+            'metaDiscNumber': 'TEXT',
+            'metaComposer': 'TEXT',
+            'metaCopyright': 'TEXT',
+            'metaComment': 'TEXT',
+            'metaLyrics': 'TEXT',
+            'metaLanguage': 'TEXT',
+            'metaStrip': 'INTEGER DEFAULT 0',
+            'metaPreserve': 'INTEGER DEFAULT 1',
+          };
+
+          for (final entry in newColumns.entries) {
+            if (!existingColumns.contains(entry.key)) {
+              try {
+                await db.execute('ALTER TABLE jobs ADD COLUMN ${entry.key} ${entry.value}');
+              } catch (_) {}
+            }
+          }
+        }
       },
     );
   }

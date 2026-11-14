@@ -29,6 +29,23 @@ class _DesktopAppShellState extends State<DesktopAppShell> {
   String? _trimmerFilePath;
   String? _playerFilePath;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initDesktopServices();
+    });
+  }
+
+  Future<void> _initDesktopServices() async {
+    try {
+      final queueService = Provider.of<JobQueueService>(context, listen: false);
+      await queueService.init();
+    } catch (e) {
+      debugPrint('[DesktopAppShell] Queue init error: $e');
+    }
+  }
+
   void _navigateTo(int index) {
     setState(() {
       _currentIndex = index;

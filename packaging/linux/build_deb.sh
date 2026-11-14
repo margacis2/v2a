@@ -2,7 +2,7 @@
 # Script to build Debian / Ubuntu .deb package for V2A Studio
 set -euo pipefail
 
-VERSION="1.2.1"
+VERSION="1.2.2"
 ARCH="amd64"
 DIST_DIR="dist"
 STAGE_DIR="build/linux_deb_stage"
