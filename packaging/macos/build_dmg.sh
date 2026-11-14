@@ -3,7 +3,7 @@
 set -euo pipefail
 
 APP_NAME="V2A"
-VERSION="1.2.2"
+VERSION="1.2.3"
 BUILD_DIR="build/macos/Build/Products/Release"
 APP_BUNDLE="${BUILD_DIR}/${APP_NAME}.app"
 DIST_DIR="dist"

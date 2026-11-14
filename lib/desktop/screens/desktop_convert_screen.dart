@@ -1181,19 +1181,28 @@ class _DesktopConvertScreenState extends State<DesktopConvertScreen> {
                     DropdownButtonFormField<ChannelMode>(
                       initialValue: _channelMode,
                       decoration: _inputDecoration(isDark),
-                      items: const [
-                        DropdownMenuItem(value: ChannelMode.keepOriginal, child: Text('Original Channel Layout')),
-                        DropdownMenuItem(value: ChannelMode.mono, child: Text('Mono (1 ch)')),
-                        DropdownMenuItem(value: ChannelMode.stereo, child: Text('Stereo (2 ch)')),
-                        DropdownMenuItem(value: ChannelMode.surround2_1, child: Text('2.1 Surround (3 ch)')),
-                        DropdownMenuItem(value: ChannelMode.quad, child: Text('4.0 Quadraphonic (4 ch)')),
-                        DropdownMenuItem(value: ChannelMode.surround5_1, child: Text('5.1 Surround (6 ch)')),
-                        DropdownMenuItem(value: ChannelMode.surround7_1, child: Text('7.1 Surround (8 ch)')),
+                      items: [
+                        const DropdownMenuItem(value: ChannelMode.keepOriginal, child: Text('Original Channel Layout (Auto)')),
+                        const DropdownMenuItem(value: ChannelMode.mono, child: Text('Mono (1 ch)')),
+                        const DropdownMenuItem(value: ChannelMode.stereo, child: Text('Stereo (2 ch)')),
+                        if (_selectedFormat != AudioFormat.mp3) ...[
+                          const DropdownMenuItem(value: ChannelMode.surround2_1, child: Text('2.1 Surround (3 ch)')),
+                          const DropdownMenuItem(value: ChannelMode.quad, child: Text('4.0 Quadraphonic (4 ch)')),
+                          const DropdownMenuItem(value: ChannelMode.surround5_1, child: Text('5.1 Surround (6 ch)')),
+                          const DropdownMenuItem(value: ChannelMode.surround7_1, child: Text('7.1 Surround (8 ch)')),
+                        ],
                       ],
                       onChanged: (val) {
                         if (val != null) setState(() => _channelMode = val);
                       },
                     ),
+                    if (_selectedFormat == AudioFormat.mp3 && currentMedia != null && (currentMedia.primaryAudioTrack?.channels ?? 2) > 2 && _channelMode == ChannelMode.keepOriginal) ...[
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Note: Source is multichannel. MP3 standard downmixes to clean Stereo (2.0).',
+                        style: TextStyle(fontSize: 11, color: Colors.amber, fontWeight: FontWeight.w500),
+                      ),
+                    ],
                   ],
                 ),
               ),

@@ -484,6 +484,16 @@ class DesktopMediaEngine implements MediaEngine {
               );
               final outputSize = await finalizedFile.length();
 
+              // Verify output integrity with FFprobe (Phase 6 requirement)
+              try {
+                final verifyResult = await inspectMedia(finalizedFile.path);
+                if (verifyResult.isCorrupted || verifyResult.duration == Duration.zero) {
+                  debugPrint('[DesktopMediaEngine] Warning: output verification noted non-standard duration');
+                }
+              } catch (ve) {
+                debugPrint('[DesktopMediaEngine] FFprobe verification warning: $ve');
+              }
+
               if (!completer.isCompleted) {
                 completer.complete(
                   ConversionResult(

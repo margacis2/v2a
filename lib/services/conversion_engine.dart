@@ -367,9 +367,15 @@ class ConversionEngine {
       args.addAll(['-ar', '${job.sampleRateHz}']);
     }
 
-    // Channels
+    // Channels and downmixing / layout enforcement
     if (job.channelMode.channelCount != null) {
       args.addAll(['-ac', '${job.channelMode.channelCount}']);
+    } else if (job.format == AudioFormat.mp3) {
+      // If user selected keepOriginal but format is MP3 and source has >2 channels (e.g. 5.1/7.1),
+      // libmp3lame strictly rejects >2 channels. Automatically downmix to stereo (2 ch) with explicit -ac 2.
+      if (job.selectedAudioTrackIndex >= 0) {
+        args.addAll(['-ac', '2']);
+      }
     }
 
     // Audio Filters Pipeline

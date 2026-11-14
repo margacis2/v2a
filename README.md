@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/margacis2/v2a/releases/tag/v1.2.2"><img src="https://img.shields.io/badge/Release-v1.2.2-blue?style=flat-square" alt="Latest Release v1.2.2" /></a>
+  <a href="https://github.com/margacis2/v2a/releases/tag/v1.2.3"><img src="https://img.shields.io/badge/Release-v1.2.3-blue?style=flat-square" alt="Latest Release v1.2.3" /></a>
   <img src="https://img.shields.io/badge/Platform-Windows%20|%20macOS%20|%20Linux%20|%20Android-brightgreen?style=flat-square" alt="Platforms" />
   <img src="https://img.shields.io/badge/Desktop%20App%20ID-com.v2a.converter.desktop-blueviolet?style=flat-square" alt="Desktop ID" />
   <img src="https://img.shields.io/badge/Android%20App%20ID-com.v2a.converter.v2a-success?style=flat-square" alt="Android ID" />
@@ -21,39 +21,39 @@
 
 ---
 
-## 📦 Official Release Downloads (Version 1.2.2)
+## 📦 Official Release Downloads (Version 1.2.3)
 
-All production binaries are uploaded and directly downloadable from the official [V2A v1.2.2 GitHub Release](https://github.com/margacis2/v2a/releases/tag/v1.2.2):
+All production binaries are uploaded and directly downloadable from the official [V2A v1.2.3 GitHub Release](https://github.com/margacis2/v2a/releases/tag/v1.2.3):
 
 ### 🪟 Windows 10 / 11 (64-bit)
 | Package Format | File Name | Size | Direct Download Link |
 |---|---|---|---|
-| **Inno Setup EXE Installer** | `V2A-Setup-1.2.2-x64.exe` | 41.7 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-Setup-1.2.2-x64.exe) |
-| **Windows MSI Installer** | `V2A-1.2.2-x64.msi` | 42.1 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-1.2.2-x64.msi) |
-| **Standalone Portable ZIP** | `V2A-1.2.2-Windows-x64-Portable.zip` | 58.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-1.2.2-Windows-x64-Portable.zip) |
+| **Inno Setup EXE Installer** | `V2A-Setup-1.2.3-x64.exe` | 41.7 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-Setup-1.2.3-x64.exe) |
+| **Windows MSI Installer** | `V2A-1.2.3-x64.msi` | 42.1 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-1.2.3-x64.msi) |
+| **Standalone Portable ZIP** | `V2A-1.2.3-Windows-x64-Portable.zip` | 58.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-1.2.3-Windows-x64-Portable.zip) |
 
 ### 🍏 macOS (Apple Silicon & Intel Universal 2)
 | Package Format | File Name | Size | Direct Download Link |
 |---|---|---|---|
-| **Apple Disk Image (DMG)** | `V2A-1.2.2-macOS.dmg` | 63.2 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-1.2.2-macOS.dmg) |
-| **Component Package (PKG)** | `V2A-1.2.2-macOS.pkg` | 56.7 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-1.2.2-macOS.pkg) |
+| **Apple Disk Image (DMG)** | `V2A-1.2.3-macOS.dmg` | 63.2 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-1.2.3-macOS.dmg) |
+| **Component Package (PKG)** | `V2A-1.2.3-macOS.pkg` | 56.7 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-1.2.3-macOS.pkg) |
 
 ### 🐧 Linux (x86_64)
 | Distribution / Package Format | File Name | Size | Direct Download Link |
 |---|---|---|---|
-| **Debian / Ubuntu (.deb)** | `V2A-1.2.2-Linux-x64.deb` | 17.1 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-1.2.2-Linux-x64.deb) |
-| **Fedora / RHEL (.rpm)** | `V2A-1.2.2-Linux-x64.rpm` | 17.1 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-1.2.2-Linux-x64.rpm) |
-| **Universal AppImage** | `V2A-1.2.2-x86_64.AppImage` | 20.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-1.2.2-x86_64.AppImage) |
-| **Portable Tarball (.tar.gz)** | `V2A-1.2.2-Linux-x64-Portable.tar.gz` | 20.6 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-1.2.2-Linux-x64-Portable.tar.gz) |
+| **Debian / Ubuntu (.deb)** | `V2A-1.2.3-Linux-x64.deb` | 17.1 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-1.2.3-Linux-x64.deb) |
+| **Fedora / RHEL (.rpm)** | `V2A-1.2.3-Linux-x64.rpm` | 17.1 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-1.2.3-Linux-x64.rpm) |
+| **Universal AppImage** | `V2A-1.2.3-x86_64.AppImage` | 20.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-1.2.3-x86_64.AppImage) |
+| **Portable Tarball (.tar.gz)** | `V2A-1.2.3-Linux-x64-Portable.tar.gz` | 20.6 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-1.2.3-Linux-x64-Portable.tar.gz) |
 
 ### 🤖 Android (APKs & Google Play Bundle)
 | Target Device / Architecture | Package Name | Size | Direct Download Link |
 |---|---|---|---|
-| **ARM64 Devices (Recommended)** | `V2A-arm64-v8a-release.apk` | 63.9 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-arm64-v8a-release.apk) |
-| **Older 32-bit ARM Devices** | `V2A-armeabi-v7a-release.apk` | 98.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-armeabi-v7a-release.apk) |
-| **x86_64 Emulators / ChromeOS** | `V2A-x86_64-release.apk` | 71.5 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-x86_64-release.apk) |
-| **Universal All-in-One APK** | `V2A-universal-release.apk` | 229.4 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-universal-release.apk) |
-| **Google Play App Bundle** | `V2A-release.aab` | 142.8 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.2/V2A-release.aab) |
+| **ARM64 Devices (Recommended)** | `V2A-arm64-v8a-release.apk` | 63.9 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-arm64-v8a-release.apk) |
+| **Older 32-bit ARM Devices** | `V2A-armeabi-v7a-release.apk` | 98.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-armeabi-v7a-release.apk) |
+| **x86_64 Emulators / ChromeOS** | `V2A-x86_64-release.apk` | 71.5 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-x86_64-release.apk) |
+| **Universal All-in-One APK** | `V2A-universal-release.apk` | 229.4 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-universal-release.apk) |
+| **Google Play App Bundle** | `V2A-release.aab` | 142.8 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.3/V2A-release.aab) |
 
 ---
 

@@ -19,7 +19,13 @@ void main() {
     expect(ok, isTrue);
 
     final currentDir = Directory.current.path;
-    final testFile = '$currentDir/test_input.wav';
+    final testFile = '$currentDir/test_input_pipeline.wav';
+    
+    // Dynamically generate test fixture
+    await Process.run('ffmpeg', [
+      '-f', 'lavfi', '-i', 'sine=frequency=1000:duration=2',
+      '-y', testFile,
+    ]);
     expect(File(testFile).existsSync(), isTrue);
 
     final inspected = await engine.inspectMedia(testFile);
@@ -68,6 +74,9 @@ void main() {
     expect(File(result.outputPath).lengthSync(), greaterThan(0));
 
     // Clean up
+    if (File(testFile).existsSync()) {
+      File(testFile).deleteSync();
+    }
     if (File(result.outputPath).existsSync()) {
       File(result.outputPath).deleteSync();
     }

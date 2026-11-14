@@ -2,7 +2,7 @@
 # Script to build RPM package for Fedora / RHEL
 set -euo pipefail
 
-VERSION="1.2.2"
+VERSION="1.2.3"
 DIST_DIR="dist"
 DEB_PATH="$DIST_DIR/V2A-${VERSION}-Linux-x64.deb"
 

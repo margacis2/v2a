@@ -273,4 +273,14 @@ enum ChannelMode {
   final String label;
   final int? channelCount;
   const ChannelMode(this.label, this.channelCount);
+
+  /// Returns true if this channel mode can be safely encoded by the given format.
+  /// For instance, MP3 (libmp3lame) only supports mono (1) and stereo (2).
+  bool isSupportedByFormat(AudioFormat format) {
+    if (this == ChannelMode.keepOriginal) return true;
+    if (format == AudioFormat.mp3) {
+      return this == ChannelMode.mono || this == ChannelMode.stereo;
+    }
+    return true;
+  }
 }
