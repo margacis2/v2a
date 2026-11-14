@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
@@ -272,6 +273,8 @@ class _DesktopConvertScreenState extends State<DesktopConvertScreen> {
       return;
     }
 
+    final queue = Provider.of<JobQueueService>(context, listen: false);
+
     // Ensure all selected files have inspected metadata before enqueuing
     for (final filePath in _selectedFiles) {
       if (!_inspectedMediaCache.containsKey(filePath)) {
@@ -282,7 +285,6 @@ class _DesktopConvertScreenState extends State<DesktopConvertScreen> {
       }
     }
 
-    final queue = Provider.of<JobQueueService>(context, listen: false);
     final List<ConversionJob> batchJobs = [];
 
     for (int fileIdx = 0; fileIdx < _selectedFiles.length; fileIdx++) {
@@ -293,13 +295,11 @@ class _DesktopConvertScreenState extends State<DesktopConvertScreen> {
         final file = File(filePath);
         final sizeBytes = file.existsSync() ? file.lengthSync() : 0;
         media = MediaFile(
-          id: filePath,
-          filePath: filePath,
+          path: filePath,
           fileName: p.basename(filePath),
           sizeBytes: sizeBytes,
           duration: const Duration(seconds: 0),
-          format: p.extension(filePath).replaceAll('.', ''),
-          isVideo: true,
+          extension: p.extension(filePath).replaceAll('.', ''),
           audioTracks: [
             AudioTrackInfo(
               index: 0,
@@ -1030,8 +1030,11 @@ class _DesktopConvertScreenState extends State<DesktopConvertScreen> {
 
   Widget _buildFormatOptionsCard(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
     final isLossless = _selectedFormat == AudioFormat.flac || _selectedFormat == AudioFormat.wav;
+    final activeFile = _selectedFiles.isNotEmpty && _activeFileIndex < _selectedFiles.length
+        ? _selectedFiles[_activeFileIndex]
+        : null;
+    final currentMedia = activeFile != null ? _inspectedMediaCache[activeFile] : null;
 
     return Container(
       padding: const EdgeInsets.all(20),

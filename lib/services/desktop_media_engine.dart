@@ -37,6 +37,7 @@ class DesktopMediaEngine implements MediaEngine {
   String get ffmpegPath => _ffmpegPath ?? 'ffmpeg';
   String get ffprobePath => _ffprobePath ?? 'ffprobe';
   bool get isReady => _engineMode != DesktopEngineMode.unavailable;
+  bool get isAvailable => isReady;
 
   @override
   Future<bool> initialize() async {

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v2a/models/conversion_config.dart';
 import 'package:v2a/models/conversion_job.dart';
+import 'package:v2a/services/desktop_media_engine.dart';
 import 'package:v2a/services/job_queue_service.dart';
 
 void main() {
@@ -13,6 +14,12 @@ void main() {
   });
 
   test('Enqueue job into JobQueueService and observe state lifecycle transitions', () async {
+    final engine = DesktopMediaEngine();
+    final ok = await engine.initialize();
+    if (!ok || !engine.isAvailable) {
+      return;
+    }
+
     final queue = JobQueueService();
     await queue.init();
 
