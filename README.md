@@ -40,10 +40,10 @@ All production binaries are uploaded and directly downloadable from the official
 ### 🐧 Linux (x86_64)
 | Distribution / Package Format | File Name | Size | Direct Download Link |
 |---|---|---|---|
-| **Debian / Ubuntu (.deb)** | `V2A-1.2.1-Linux-x64.deb` | ~45 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-Linux-x64.deb) |
-| **Fedora / RHEL (.rpm)** | `V2A-1.2.1-Linux-x64.rpm` | ~45 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-Linux-x64.rpm) |
-| **Universal AppImage** | `V2A-1.2.1-x86_64.AppImage` | ~55 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-x86_64.AppImage) |
-| **Portable Tarball (.tar.gz)** | `V2A-1.2.1-Linux-x64-Portable.tar.gz` | ~45 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-Linux-x64-Portable.tar.gz) |
+| **Debian / Ubuntu (.deb)** | `V2A-1.2.1-Linux-x64.deb` | 17.1 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-Linux-x64.deb) |
+| **Fedora / RHEL (.rpm)** | `V2A-1.2.1-Linux-x64.rpm` | 17.1 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-Linux-x64.rpm) |
+| **Universal AppImage** | `V2A-1.2.1-x86_64.AppImage` | 20.0 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-x86_64.AppImage) |
+| **Portable Tarball (.tar.gz)** | `V2A-1.2.1-Linux-x64-Portable.tar.gz` | 20.6 MB | [Direct Download](https://github.com/margacis2/v2a/releases/download/v1.2.1/V2A-1.2.1-Linux-x64-Portable.tar.gz) |
 
 ### 🤖 Android (APKs & Google Play Bundle)
 | Target Device / Architecture | Package Name | Size | Direct Download Link |
